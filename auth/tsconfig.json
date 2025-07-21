@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // El código compilado será compatible con ES6
+    "module": "commonjs", // Usamos CommonJS para Node.js
+    "outDir": "./dist", // La carpeta de salida será "dist"
+    "rootDir": "./src", // El código fuente estará en la carpeta "src"
+    "strict": true, // Activar todas las comprobaciones estrictas
+    "esModuleInterop": true, // Permite la importación de módulos CommonJS
+    "skipLibCheck": true, // Omite la comprobación de tipos en las bibliotecas
+    "forceConsistentCasingInFileNames": true // Fuerza una coincidencia de mayúsculas/minúsculas consistente
+  },
+  "include": ["src/**/*.ts"], // Incluir todos los archivos .ts dentro de la carpeta "src"
+  "exclude": ["node_modules"] // Excluir la carpeta "node_modules"
+}

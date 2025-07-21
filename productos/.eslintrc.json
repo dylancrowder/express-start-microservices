@@ -1,0 +1,16 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:security/recommended",
+    "plugin:you-dont-need-lodash-underscore/compatible"
+  ],
+  "plugins": [
+    "security",
+    "you-dont-need-lodash-underscore"
+  ],
+  "rules": {}
+}
