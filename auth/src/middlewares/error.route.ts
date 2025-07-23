@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import logger from "../utilities/pino.logger";
+import { logger } from "../utilities/winsdom";
 
 function errorRoute(req: Request, res: Response) {
   logger.error("❌ Ruta no encontrada:", req.originalUrl);

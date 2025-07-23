@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 dotenv.config({ path: `.env.${process.env.NODE_ENV || "development"}` });
 
 import app from "./app";
-import logger from "./utilities/pino.logger";
 import { initMongo } from "./db/db_connect";
+import { logger } from "./utilities/winsdom";
 
 const PORT = process.env.APP_PORT || 8085;
 
@@ -16,21 +16,19 @@ async function startServer() {
       );
     });
   } catch (error) {
-    logger.error({ error }, "Error al conectar a MongoDB. Cerrando...");
+    logger.error("Error al conectar a MongoDB. Cerrando...", { error });
     process.exit(1);
   }
 }
 
-// Iniciar app
 startServer();
 
-// Errores globales
 process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Excepción no controlada");
+  logger.error("Excepción no controlada", { err });
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason) => {
-  logger.error({ reason }, "Promesa no manejada");
+  logger.error("Promesa no manejada", { reason });
   process.exit(1);
 });

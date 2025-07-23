@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import bcrypt from "bcryptjs";
 import User from "./auth.schema";
-import logger from "../../utilities/pino.logger";
+import { logger } from "../../utilities/winsdom";
 
 export class AuthModel {
   // Method to register a new user
@@ -13,12 +14,17 @@ export class AuthModel {
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new User({ email, password: hashedPassword });
       return await newUser.save();
-    } catch (error: any) {
-      if (error.code === 11000) {
-        logger.warn("⚠️ Email ya registrado:", error.keyValue?.email);
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as any).code === 11000
+      ) {
+        logger.debug("⚠️ Email ya registrado:", (error as any).keyValue?.email);
         throw new Error("El email ya está registrado");
       }
-      logger.error("❌ Error al registrar usuario:", error);
+      logger.debug("❌ Error al registrar usuario:", error);
       throw error;
     }
   }

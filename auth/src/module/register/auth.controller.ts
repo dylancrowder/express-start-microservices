@@ -4,14 +4,15 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-import logger from "../../utilities/pino.logger";
 import { AuthModel } from "./auth.model";
+import { logger } from "../../utilities/winsdom";
 
 export class AuthController {
   //CREAR NUEVO USUARIO
   static register = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
+      logger.debug("uyser ty c otnra ,", email, password);
 
       const user = await AuthModel.register(email, password);
 
