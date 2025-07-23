@@ -1,30 +1,37 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
-export interface JwtPayload {
-  userId: string;
-  email: string;
-  roles?: string[];
-}
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: JwtPayload;
-    }
+declare module "express" {
+  export interface Request {
+    user?: any;
   }
 }
 
-export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: 'Token requerido' });
+export function authenticateJWT(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // Verificamos si existe el token en las cookies
+    const token = req.cookies.token;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "No token provided, authorization denied" });
+    }
 
-  const token = authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Token malformado' });
+    // Verificamos y decodificamos el token con la clave secreta
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
 
-  jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
-    if (err) return res.status(403).json({ message: 'Token inválido' });
-    req.user = decoded as JwtPayload;
+    // Asignamos la información del usuario decodificado a `req.user`
+    req.user = decoded;
+
+    // Continuar con la siguiente función
     next();
-  });
+  } catch {
+    // Si ocurre un error al verificar el token, respondemos y terminamos la ejecución
+    res.status(401).json({ message: "Token inválido o expirado" });
+    return;
+  }
 }

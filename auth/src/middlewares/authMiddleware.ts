@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+// ESTA RUTA NO VA
 import jwt from "jsonwebtoken";
 
 // Extiende los tipos de Express para que `req.user` sea reconocido

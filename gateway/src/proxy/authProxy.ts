@@ -1,13 +1,10 @@
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import proxy from "express-http-proxy";
 
-const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:5000';
+const authServiceUrl = process.env.AUTH_SERVICE_URL || "http://auth:8085";
 
-const authProxy = createProxyMiddleware({
-  target: authServiceUrl,
-  changeOrigin: true,
-  pathRewrite: {
-    '^/auth': '',
-  },
+const authProxy = proxy(authServiceUrl, {
+  proxyReqPathResolver: (req) => req.url.replace(/^\/auth/, ""),
+  // Sin inyectar headers internos
 });
 
 export default authProxy;

@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes";
 import productsRoutes from "./routes/productsRoutes";
 import compression from "compression";
 import docsRoutes from "./routes/documentation.route";
+import httpLogger from "./middleware/pinoHttp";
 
 const app = express();
 
@@ -16,10 +17,10 @@ app.use(corsHelmet);
 app.use(rateLimiter);
 app.use(compression());
 
+app.use(docsRoutes);
+app.use(httpLogger);
 // Rutas públicas (auth)
 app.use("/auth", authRoutes);
-app.use(docsRoutes);
-
 // Rutas protegidas (products)
 app.use("/products", authenticateJWT, productsRoutes);
 
