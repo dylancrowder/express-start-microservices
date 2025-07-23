@@ -1,15 +1,15 @@
-//GATEWAY
+// GATEWAY
 import express from "express";
 import corsHelmet from "./middleware/corsHelmet";
 import rateLimiter from "./middleware/rateLimiter";
 import errorHandler from "./middleware/errorHandler";
 import { authenticateJWT } from "./middleware/authenticateJWT";
-import authRoutes from "./routes/authRoutes";
-import productsRoutes from "./routes/productsRoutes";
 import compression from "compression";
-import docsRoutes from "./routes/documentation.route";
+import docsRoutes from "./decumentation/documentation.route";
 import { logger } from "./utils/winsdom";
 import expressWinston from "express-winston";
+import proxy from "express-http-proxy";
+
 const app = express();
 
 app.use(express.json());
@@ -34,10 +34,48 @@ app.use(
 
 app.use(docsRoutes);
 
-// Rutas públicas (auth)
-app.use("/auth", authRoutes);
-// Rutas protegidas (products)
-app.use("/products", authenticateJWT, productsRoutes);
+// URLs de microservicios
+const AUTH_SERVICE_URL = "localhost:8085";
+const PRODUCTS_SERVICE_URL = "localhost:8083";
+
+// Proxy para /auth
+app.use(
+  "/auth",
+  proxy(AUTH_SERVICE_URL, {
+    proxyReqPathResolver: (req) => req.originalUrl.replace(/^\/auth/, ""),
+
+    proxyReqBodyDecorator: (bodyContent, srcReq) => {
+      // Devolver el objeto body, no string JSON
+      if (srcReq.body && Object.keys(srcReq.body).length) {
+        return srcReq.body;
+      }
+      return bodyContent;
+    },
+
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      proxyReqOpts.headers = proxyReqOpts.headers || {};
+      proxyReqOpts.headers["Content-Type"] = "application/json";
+
+      // Actualizar Content-Length si hay body
+      if (srcReq.body && Object.keys(srcReq.body).length) {
+        proxyReqOpts.headers["Content-Length"] = Buffer.byteLength(
+          JSON.stringify(srcReq.body)
+        );
+      }
+
+      return proxyReqOpts;
+    },
+  })
+);
+
+// Proxy para /products (con autenticación previa)
+app.use(
+  "/products",
+  authenticateJWT,
+  proxy(PRODUCTS_SERVICE_URL, {
+    proxyReqPathResolver: (req) => req.originalUrl.replace(/^\/products/, ""),
+  })
+);
 
 // Middleware global de manejo de errores
 app.use(errorHandler);
