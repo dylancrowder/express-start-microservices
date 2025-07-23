@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import app from "./app";
-import logger from "./utils/logger";
+import { logger } from "./utils/winsdom";
 
 const PORT = process.env.PORT || 4000;
 
@@ -12,11 +12,11 @@ app.listen(PORT, () => {
 
 // Errores globales
 process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Excepción no controlada");
+  logger.error("Excepción no controlada", { err });
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason) => {
-  logger.error({ reason }, "Promesa no manejada");
+  logger.error("Promesa no manejada", { reason });
   process.exit(1);
 });

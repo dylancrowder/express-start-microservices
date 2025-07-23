@@ -12,8 +12,7 @@ export class AuthController {
   static register = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
-      logger.debug("uyser ty c otnra ,", email, password);
-
+      logger.debug("user y contra", { email, password });
       const user = await AuthModel.register(email, password);
 
       if (!user) {
@@ -26,7 +25,7 @@ export class AuthController {
 
       res.status(201).json({ message: "Usuario registrado correctamente" });
     } catch (error) {
-      logger.debug(error);
+      logger.error(error);
       res.status(500).json({ message: "Error en el registro" });
     }
   };

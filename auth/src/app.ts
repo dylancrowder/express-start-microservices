@@ -25,8 +25,14 @@ app.use(apiLimiter);
 app.use(
   expressWinston.logger({
     winstonInstance: logger,
-    meta: true,
-    expressFormat: true,
+    level: "info",
+    meta: true, // para que mande info extra (podés poner false si querés menos)
+    msg: "HTTP {{req.method}} {{req.url}} - {{res.statusCode}}",
+    dynamicMeta: (req, res) => {
+      return {
+        httpMessage: `HTTP ${req.method} ${req.url} - ${res.statusCode}`,
+      };
+    },
     colorize: true,
   })
 );
