@@ -1,6 +1,6 @@
 import AppError from "../utilities/error/appError";
-import logger from "../utilities/pino.logger";
 import { Request, Response } from "express";
+import { logger } from "../utilities/winsdom";
 
 function errorHandler(err: Error, req: Request, res: Response): void {
   if (err instanceof AppError) {

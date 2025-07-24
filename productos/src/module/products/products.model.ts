@@ -1,6 +1,7 @@
 import { Product } from "../../interfaces/product.interface";
+import { logger } from "../../utilities/winsdom";
 import ProductModel from "./product.schema";
-import logger from "../../utilities/pino.logger";
+
 export class ProductService {
   static async createProduct(body: Product) {
     try {

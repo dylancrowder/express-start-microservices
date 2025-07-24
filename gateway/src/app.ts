@@ -43,28 +43,7 @@ app.use(
   "/auth",
   proxy(AUTH_SERVICE_URL, {
     proxyReqPathResolver: (req) => req.originalUrl.replace(/^\/auth/, ""),
-
-    proxyReqBodyDecorator: (bodyContent, srcReq) => {
-      // Devolver el objeto body, no string JSON
-      if (srcReq.body && Object.keys(srcReq.body).length) {
-        return srcReq.body;
-      }
-      return bodyContent;
-    },
-
-    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-      proxyReqOpts.headers = proxyReqOpts.headers || {};
-      proxyReqOpts.headers["Content-Type"] = "application/json";
-
-      // Actualizar Content-Length si hay body
-      if (srcReq.body && Object.keys(srcReq.body).length) {
-        proxyReqOpts.headers["Content-Length"] = Buffer.byteLength(
-          JSON.stringify(srcReq.body)
-        );
-      }
-
-      return proxyReqOpts;
-    },
+    proxyReqBodyDecorator: (_, req) => req.body,
   })
 );
 
