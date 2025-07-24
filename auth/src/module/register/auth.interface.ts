@@ -1,9 +1,9 @@
-
-//tipado
-export interface Article {
-  ID: number;
-  NOMBRE: string;
-  MARCA: string;
-  ESTADO: number;
-  FECHA_MODIFICACION: Date;
+export interface IUser {
+  email: string;
+  password: string;
+  role?: string;
+}
+export interface RegisterDTO {
+  email: string;
+  password: string;
 }

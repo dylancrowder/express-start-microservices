@@ -47,7 +47,7 @@ app.get("/swagger.json", (_req, res) => {
 });
 
 // Manejo de errores
-app.use(errorRoute);
 app.use(errorHandler);
+app.use(errorRoute);
 
 export default app;

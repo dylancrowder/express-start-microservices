@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import AppError from "../utilities/error/appError";
 
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { logger } from "../utilities/winsdom";
 
-function errorHandler(err: Error, req: Request, res: Response): void {
+function errorHandler(
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   if (err instanceof AppError) {
     if (err.isOperational) {
       logger.warn({
@@ -19,8 +25,6 @@ function errorHandler(err: Error, req: Request, res: Response): void {
         status: "error",
         name: err.name,
         message: err.responseMessage,
-        suggestion:
-          "Revise la entrada o contacte a soporte si el problema persiste.",
       });
     } else {
       logger.error({

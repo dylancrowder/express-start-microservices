@@ -1,39 +1,65 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 import { AuthModel } from "./auth.model";
 import { logger } from "../../utilities/winsdom";
+import { authVerification } from "../../utilities/joi";
+import AppError from "../../utilities/error/appError";
 
 export class AuthController {
   //CREAR NUEVO USUARIO
-  static register = async (req: Request, res: Response): Promise<void> => {
+  static register = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
+      const verificar = authVerification.validate(req.body);
+
+      if (verificar.error) {
+        throw new AppError(
+          "ValidationError",
+          400,
+          verificar.error,
+          "Datos inválidos. Por favor, revisa los campos de la autentificación.",
+          true
+        );
+      }
+
       const { email, password } = req.body;
-      logger.debug("user y contra", { email, password });
-      const user = await AuthModel.register(email, password);
+
+      const user = await AuthModel.register({ email, password });
 
       if (!user) {
-        res.status(500).json({
-          message:
-            "Error al registrar usuario no se pudo ingresar a la base de datos ",
-        });
-        return;
+        throw new AppError(
+          "DatabaseError",
+          409,
+          "No se pudo registrar el usuario.",
+          "Error al registrar usuario. Intente más tarde.",
+          true
+        );
       }
 
       res.status(201).json({ message: "Usuario registrado correctamente" });
     } catch (error) {
-      logger.error(error);
-      res.status(500).json({ message: "Error en el registro" });
+      next(error);
     }
   };
 
   //LOGUEAR USUARIO
   static login = async (req: Request, res: Response): Promise<void> => {
     try {
+      const verificar = authVerification.validate(req.body);
+      if (verificar.error) {
+        logger.error("❌ Error de validación:", verificar.error);
+        throw new Error("Datos de autenticación inválidos");
+      }
+
       const { email, password } = req.body;
+
       const user = await AuthModel.findByEmail(email);
 
       if (

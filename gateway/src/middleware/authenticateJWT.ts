@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { logger } from "../utils/winsdom";
 
 declare module "express" {
   export interface Request {
@@ -29,7 +30,8 @@ export function authenticateJWT(
 
     // Continuar con la siguiente función
     next();
-  } catch {
+  } catch (error) {
+    logger.error("Error in authenticateJWT:", error);
     // Si ocurre un error al verificar el token, respondemos y terminamos la ejecución
     res.status(401).json({ message: "Token inválido o expirado" });
     return;

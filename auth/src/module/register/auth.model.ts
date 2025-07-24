@@ -1,23 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import bcrypt from "bcryptjs";
-import User from "./auth.schema";
+import User, { UserDocument } from "./auth.schema";
 import { logger } from "../../utilities/winsdom";
+import { RegisterDTO } from "./auth.interface";
 
 export class AuthModel {
   // Method to register a new user
-  static async register(email: string, password: string) {
+  static async register({
+    email,
+    password,
+  }: RegisterDTO): Promise<UserDocument | undefined> {
     try {
-      const is_register = await this.findByEmail(email);
-
-      if (is_register) {
-        logger.debug("⚠️ Email ya registrado:", email);
-        throw new Error("El email ya está registrado");
-      }
-
-      if (typeof password !== "string") {
-        throw new Error("Password debe ser string");
-      }
-
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const newUser = new User({ email, password: hashedPassword });
