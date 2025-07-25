@@ -1,6 +1,5 @@
 // PRODUCTS
 import express from "express";
-import bodyParser from "body-parser";
 import swaggerUi from "swagger-ui-express";
 import { swaggerDocs } from "./documentation/swagger.config";
 import cors from "cors";
@@ -16,8 +15,8 @@ import { logger } from "./utilities/winsdom";
 const app = express();
 
 //middleware configuration
-app.use(bodyParser.json({ limit: "300kb" }));
 
+app.use(express.json({ limit: "300kb" }));
 app.use(cors());
 
 app.use(

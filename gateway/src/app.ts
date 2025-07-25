@@ -54,6 +54,18 @@ app.use(
   authenticateJWT,
   proxy(PRODUCTS_SERVICE_URL, {
     proxyReqPathResolver: (req) => req.originalUrl.replace(/^\/products/, ""),
+    proxyReqBodyDecorator: (body, req) => body,
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      proxyReqOpts.headers = proxyReqOpts.headers || {}; // ✅ fix acá
+
+      proxyReqOpts.headers["Content-Type"] = "application/json";
+
+      if ((srcReq as any).user) {
+        proxyReqOpts.headers["x-user-id"] = (srcReq as any).user.userId;
+      }
+
+      return proxyReqOpts;
+    },
   })
 );
 

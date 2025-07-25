@@ -1,5 +1,18 @@
-import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+
+// Defino la interface del usuario decodificado
+interface DecodedUser {
+  userId: string;
+  role: string;
+}
+
+// Extiendo la interface Request para agregar la propiedad user
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: DecodedUser;
+  }
+}
 
 export const authenticateJWT = (
   req: Request,
@@ -12,11 +25,18 @@ export const authenticateJWT = (
     if (!token) {
       return res.status(401).json({ message: "No autenticado" });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    return res.json({ authenticated: true, userId: (decoded as any).userId });
-  } catch (error) {
-    console.log(error);
 
+    // Verifico y decodifico el token
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string
+    ) as DecodedUser;
+
+    // Guardo el usuario decodificado en req.user
+    req.user = decoded;
+
+    next();
+  } catch (error) {
     return res.status(401).json({ message: "Token inválido" });
   }
 };
