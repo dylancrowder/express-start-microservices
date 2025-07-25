@@ -3,12 +3,14 @@ import express from "express";
 import corsHelmet from "./middleware/corsHelmet";
 import rateLimiter from "./middleware/rateLimiter";
 import errorHandler from "./middleware/errorHandler";
-import { authenticateJWT } from "./middleware/authenticateJWT";
+
 import compression from "compression";
 import docsRoutes from "./decumentation/documentation.route";
 import { logger } from "./utils/winsdom";
 import expressWinston from "express-winston";
 import proxy from "express-http-proxy";
+import cookieParser from "cookie-parser";
+import { authenticateJWT } from "./middleware/authenticateJWT";
 
 const app = express();
 
@@ -16,7 +18,7 @@ app.use(express.json());
 app.use(corsHelmet);
 app.use(rateLimiter);
 app.use(compression());
-
+app.use(cookieParser());
 app.use(
   expressWinston.logger({
     winstonInstance: logger,
@@ -34,7 +36,6 @@ app.use(
 
 app.use(docsRoutes);
 
-// URLs de microservicios
 const AUTH_SERVICE_URL = "localhost:8085";
 const PRODUCTS_SERVICE_URL = "localhost:8083";
 

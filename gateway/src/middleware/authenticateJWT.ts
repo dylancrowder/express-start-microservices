@@ -1,39 +1,22 @@
-import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { logger } from "../utils/winsdom";
+import { Request, Response, NextFunction } from "express";
 
-declare module "express" {
-  export interface Request {
-    user?: any;
-  }
-}
-
-export function authenticateJWT(
+export const authenticateJWT = (
   req: Request,
   res: Response,
   next: NextFunction
-) {
+) => {
   try {
-    // Verificamos si existe el token en las cookies
     const token = req.cookies.token;
+
     if (!token) {
-      return res
-        .status(401)
-        .json({ message: "No token provided, authorization denied" });
+      return res.status(401).json({ message: "No autenticado" });
     }
-
-    // Verificamos y decodificamos el token con la clave secreta
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-
-    // Asignamos la información del usuario decodificado a `req.user`
-    req.user = decoded;
-
-    // Continuar con la siguiente función
-    next();
+    return res.json({ authenticated: true, userId: (decoded as any).userId });
   } catch (error) {
-    logger.error("Error in authenticateJWT:", error);
-    // Si ocurre un error al verificar el token, respondemos y terminamos la ejecución
-    res.status(401).json({ message: "Token inválido o expirado" });
-    return;
+    console.log(error);
+
+    return res.status(401).json({ message: "Token inválido" });
   }
-}
+};

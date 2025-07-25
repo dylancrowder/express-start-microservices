@@ -28,10 +28,6 @@ const productSchema = new Schema<Product>(
       required: [true, "La descripción es requerida"],
       maxlength: [500, "Máximo 500 caracteres"],
     },
-    image: {
-      type: String,
-      default: "no hay imagen",
-    },
   },
   { timestamps: true }
 );

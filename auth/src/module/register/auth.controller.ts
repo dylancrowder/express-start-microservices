@@ -8,6 +8,7 @@ import { AuthModel } from "./auth.model";
 import { logger } from "../../utilities/winsdom";
 import { authVerification } from "../../utilities/joi";
 import AppError from "../../utilities/error/appError";
+import { log } from "winston";
 
 export class AuthController {
   //CREAR NUEVO USUARIO
@@ -50,66 +51,66 @@ export class AuthController {
   };
 
   //LOGUEAR USUARIO
-  static login = async (req: Request, res: Response): Promise<void> => {
+  static login = async (req: Request, res: Response): Promise<any> => {
     try {
+      // Validar el body
       const verificar = authVerification.validate(req.body);
       if (verificar.error) {
-        logger.error("❌ Error de validación:", verificar.error);
-        throw new Error("Datos de autenticación inválidos");
+        logger.error("❌ Error de validación:", verificar.error.details);
+        return res
+          .status(400)
+          .json({ message: "Datos de autenticación inválidos" });
       }
 
       const { email, password } = req.body;
 
-      const user = await AuthModel.findByEmail(email);
-
-      if (
-        !user ||
-        typeof password !== "string" ||
-        typeof user.password !== "string" ||
-        !(await bcrypt.compare(password, user.password))
-      ) {
-        res.status(401).json({ message: "Credenciales inválidas" });
-        return;
+      // Buscar usuario por email
+      const user = await AuthModel.findByEmail(email.trim().toLowerCase());
+      if (!user) {
+        logger.debug("Usuario no encontrado con ese email");
+        return res
+          .status(401)
+          .json({ message: "Email o contraseña incorrectos" });
       }
 
-      // Generar el JWT con el userId
+      // Verificar contraseña
+      const passwordCorrecta = await bcrypt.compare(password, user.password);
+      if (!passwordCorrecta) {
+        logger.debug("Contraseña incorrecta");
+        return res
+          .status(401)
+          .json({ message: "Email o contraseña incorrectos" });
+      }
+
+      // Generar el JWT
       const token = jwt.sign(
         { userId: user._id, role: user.role },
         process.env.JWT_SECRET as string,
         { expiresIn: "1h" }
       );
 
+      // Setear cookie segura
       res.cookie("token", token, {
         httpOnly: true,
-        secure: false,
+        secure: false, // poné `true` si estás en producción con HTTPS
         sameSite: "lax",
-        maxAge: 3600000,
+        maxAge: 3600000, // 1 hora
       });
 
-      // Enviar el token en el cuerpo de la respuesta
-      res.json({ message: "Autenticado correctamente" });
-    } catch (error) {
-      logger.error("❌ Error al iniciar sesión:", error);
-      res.status(500).json({ message: "Error en el login", error });
+      res.json({ message: "Autenticado correctamente", token });
+    } catch (error: any) {
+      logger.error("❌ Error al iniciar sesión:", error.message || error);
+      res
+        .status(500)
+        .json({ message: "Error en el login", error: error.message });
     }
   };
+
   //DESLOGUEAR USUARIO
   static logout = async (req: Request, res: Response): Promise<void> => {
     res.clearCookie("token");
     res.json({ message: "Sesión cerrada" });
   };
-  //VERIFICAR USUARIO
-  static verify = async (req: Request, res: Response): Promise<any> => {
-    try {
-      const token = req.cookies.token;
 
-      if (!token) {
-        return res.status(401).json({ message: "No autenticado" });
-      }
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-      return res.json({ authenticated: true, userId: (decoded as any).userId });
-    } catch (error) {
-      return res.status(401).json({ message: "Token inválido" });
-    }
-  };
+  //VERIFICAR USUARIO
 }
