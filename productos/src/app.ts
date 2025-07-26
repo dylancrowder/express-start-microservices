@@ -15,7 +15,6 @@ import { logger } from "./utilities/winsdom";
 const app = express();
 
 //middleware configuration
-
 app.use(express.json({ limit: "300kb" }));
 app.use(cors());
 
