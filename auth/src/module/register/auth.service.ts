@@ -19,12 +19,12 @@ export class AuthModel {
   }
 
   // Method to authenticate a user
-  static async findByEmail(email: string) {
+  static async findByEmail(email: string): Promise<UserDocument | null> {
     try {
       const usuario = await User.findOne({ email });
       return usuario;
     } catch (error) {
-      throw new Error("Error al buscar el usuario: ");
+      throw new Error("Error al buscar el usuario:" + error);
     }
   }
 }

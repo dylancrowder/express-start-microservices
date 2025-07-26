@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-import { AuthModel } from "./auth.model";
-import { logger } from "../../utilities/winsdom";
+import { AuthModel } from "./auth.service";
 import { authVerification } from "../../utilities/joi";
 import AppError from "../../utilities/error/appError";
-import { log } from "winston";
+import { UserDocument } from "./auth.schema";
 
 export class AuthController {
-  //CREAR NUEVO USUARIO
+  // REGISTRAR USUARIO
   static register = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {
+  ): Promise<UserDocument | any> => {
     try {
       const verificar = authVerification.validate(req.body);
 
@@ -25,92 +24,118 @@ export class AuthController {
           "ValidationError",
           400,
           verificar.error,
-          "Datos inválidos. Por favor, revisa los campos de la autentificación.",
+          "Los datos proporcionados no son válidos. Por favor, revisa los campos requeridos.",
           true
         );
       }
 
       const { email, password } = req.body;
-
       const user = await AuthModel.register({ email, password });
 
       if (!user) {
         throw new AppError(
-          "DatabaseError",
+          "ConflictError",
           409,
-          "No se pudo registrar el usuario.",
-          "Error al registrar usuario. Intente más tarde.",
+          "No se pudo crear el usuario.",
+          "Ya existe un usuario con este correo o hubo un problema al registrarlo.",
           true
         );
       }
 
-      res.status(201).json({ message: "Usuario registrado correctamente" });
+      res.status(201).json({ message: "Usuario registrado correctamente." });
     } catch (error) {
       next(error);
     }
   };
 
-  //LOGUEAR USUARIO
-  static login = async (req: Request, res: Response): Promise<any> => {
+  // LOGIN
+  static login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<UserDocument | any> => {
     try {
-      // Validar el body
       const verificar = authVerification.validate(req.body);
       if (verificar.error) {
-        logger.error("❌ Error de validación:", verificar.error.details);
-        return res
-          .status(400)
-          .json({ message: "Datos de autenticación inválidos" });
+        throw new AppError(
+          "ValidationError",
+          400,
+          verificar.error.details,
+          "Los datos ingresados no son válidos. Revisa el email y la contraseña.",
+          true
+        );
       }
 
       const { email, password } = req.body;
 
-      // Buscar usuario por email
-      const user = await AuthModel.findByEmail(email.trim().toLowerCase());
+      const user = await AuthModel.findByEmail(email);
       if (!user) {
-        logger.debug("Usuario no encontrado con ese email");
-        return res
-          .status(401)
-          .json({ message: "Email o contraseña incorrectos" });
+        throw new AppError(
+          "NotFoundError",
+          404,
+          "Usuario no encontrado.",
+          "No existe un usuario registrado con este correo electrónico.",
+          true
+        );
       }
 
-      // Verificar contraseña
       const passwordCorrecta = await bcrypt.compare(password, user.password);
       if (!passwordCorrecta) {
-        logger.debug("Contraseña incorrecta");
-        return res
-          .status(401)
-          .json({ message: "Email o contraseña incorrectos" });
+        throw new AppError(
+          "UnauthorizedError",
+          401,
+          "Contraseña incorrecta.",
+          "La contraseña ingresada es incorrecta.",
+          true
+        );
       }
 
-      // Generar el JWT
       const token = jwt.sign(
         { userId: user._id, role: user.role },
         process.env.JWT_SECRET as string,
         { expiresIn: "1h" }
       );
 
-      // Setear cookie segura
       res.cookie("token", token, {
         httpOnly: true,
-        secure: false, // poné `true` si estás en producción con HTTPS
+        secure: false, // Cambiar a true en producción con HTTPS
         sameSite: "lax",
         maxAge: 3600000, // 1 hora
       });
 
-      res.json({ message: "Autenticado correctamente", token });
+      res.status(200).json({ message: "Autenticación exitosa.", token });
     } catch (error: any) {
-      logger.error("❌ Error al iniciar sesión:", error.message || error);
-      res
-        .status(500)
-        .json({ message: "Error en el login", error: error.message });
+      next(
+        new AppError(
+          "InternalServerError",
+          500,
+          error.message || "Error al iniciar sesión.",
+          "Se produjo un error inesperado al iniciar sesión.",
+          true
+        )
+      );
     }
   };
 
-  //DESLOGUEAR USUARIO
-  static logout = async (req: Request, res: Response): Promise<void> => {
-    res.clearCookie("token");
-    res.json({ message: "Sesión cerrada" });
+  // LOGOUT
+  static logout = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      res.clearCookie("token");
+      res.status(200).json({ message: "Sesión cerrada exitosamente." });
+    } catch (error: any) {
+      next(
+        new AppError(
+          "InternalServerError",
+          500,
+          error.message || "Error al cerrar sesión.",
+          "No se pudo cerrar la sesión correctamente.",
+          true
+        )
+      );
+    }
   };
-
-  //VERIFICAR USUARIO
 }
