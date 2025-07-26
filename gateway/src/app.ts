@@ -5,7 +5,7 @@ import rateLimiter from "./middleware/rateLimiter";
 import errorHandler from "./middleware/errorHandler";
 import proxy from "express-http-proxy";
 import compression from "compression";
-import docsRoutes from "./decumentation/documentation.route";
+import docsRoutes from "./documentation/documentation.route";
 import cookieParser from "cookie-parser";
 import { authenticateJWT } from "./middleware/authenticateJWT";
 import { winstonMiddleware } from "./middleware/winston";
