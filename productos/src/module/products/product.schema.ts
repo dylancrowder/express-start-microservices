@@ -1,5 +1,8 @@
-import { Schema, model } from "mongoose";
-import { Product } from "../../interfaces/product.interface";
+import { Schema, model, HydratedDocument } from "mongoose";
+import { Product } from "./productDTO";
+
+// ✅ Definición correcta
+export type ProductDocument = HydratedDocument<Product>;
 
 const productSchema = new Schema<Product>(
   {

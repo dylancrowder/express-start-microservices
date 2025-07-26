@@ -1,8 +1,8 @@
 // src/controllers/product.controller.ts
 import { Request, Response, NextFunction } from "express";
-import { ProductService } from "./products.model";
 import AppError from "../../utilities/error/appError";
 import { createProductSchema } from "../../utilities/joi";
+import { ProductService } from "./products.services";
 
 export class ProductController {
   static createProducts = async (
@@ -14,7 +14,7 @@ export class ProductController {
       // Validación
       const { error, value } = createProductSchema.validate(req.body, {
         abortEarly: false,
-        stripUnknown: true,
+        stripUnknown: false,
       });
 
       if (error) {

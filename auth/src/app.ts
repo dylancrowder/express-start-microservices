@@ -7,7 +7,6 @@ import swaggerUi from "swagger-ui-express";
 import errorHandler from "./middlewares/error.middleware";
 import errorRoute from "./middlewares/error.route";
 import { swaggerDocs } from "./documentation/swagger.config";
-import { apiLimiter } from "./utilities/apiLimiter";
 import expressWinston from "express-winston";
 //RUTAS
 import authRoutes from "./module/register/auth.routes";
@@ -19,7 +18,6 @@ app.use(cors());
 app.use(express.json({ limit: "300kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(apiLimiter);
 
 // Logger middleware
 app.use(
