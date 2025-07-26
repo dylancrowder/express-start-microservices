@@ -1,39 +1,23 @@
 //AUTH
 import express from "express";
 import cors from "cors";
-
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import errorHandler from "./middlewares/error.middleware";
 import errorRoute from "./middlewares/error.route";
 import { swaggerDocs } from "./documentation/swagger.config";
-import expressWinston from "express-winston";
 //RUTAS
 import authRoutes from "./module/register/auth.routes";
-import { logger } from "./utilities/winsdom";
+import { winstonMiddleware } from "./middlewares/winston";
 
 const app = express();
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: "300kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-// Logger middleware
-app.use(
-  expressWinston.logger({
-    winstonInstance: logger,
-    level: "info",
-    meta: true, // para que mande info extra (podés poner false si querés menos)
-    msg: "HTTP {{req.method}} {{req.url}} - {{res.statusCode}}",
-    dynamicMeta: (req, res) => {
-      return {
-        httpMessage: `HTTP ${req.method} ${req.url} - ${res.statusCode}`,
-      };
-    },
-    colorize: true,
-  })
-);
+app.use(winstonMiddleware);
 
 // Rutas principales del microservicio de autenticación
 app.use("/", authRoutes);
