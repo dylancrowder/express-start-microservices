@@ -6,3 +6,6 @@ dist/
 .npmrc 
 .vercel
 .env
+.vscode
+.vscode/
+.dockerignore
