@@ -21,8 +21,14 @@ app.use(winstonMiddleware);
 
 app.use(docsRoutes);
 
-const AUTH_SERVICE_URL = "auth:8085";
-const PRODUCTS_SERVICE_URL = "products:8083";
+const isProduction = process.env.NODE_ENV === "production";
+
+const AUTH_SERVICE_URL = isProduction
+  ? "http://auth:8085"
+  : "http://localhost:8085";
+const PRODUCTS_SERVICE_URL = isProduction
+  ? "http://products:8083"
+  : "http://localhost:8083";
 
 app.get("/", (req, res) => {
   try {

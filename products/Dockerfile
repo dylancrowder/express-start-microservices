@@ -1,5 +1,5 @@
 # Usa Node 18 oficial con soporte para TypeScript
-FROM node:18
+FROM node:20-alpine AS builder
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
