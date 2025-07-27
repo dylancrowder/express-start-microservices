@@ -21,8 +21,24 @@ app.use(winstonMiddleware);
 
 app.use(docsRoutes);
 
-const AUTH_SERVICE_URL = "localhost:8085";
-const PRODUCTS_SERVICE_URL = "localhost:8083";
+const AUTH_SERVICE_URL = "auth:8085";
+const PRODUCTS_SERVICE_URL = "products:8083";
+
+app.get("/", (req, res) => {
+  try {
+    res.status(200).json({
+      message: "Welcome to the Gateway API",
+      services: {
+        auth: AUTH_SERVICE_URL,
+        products: PRODUCTS_SERVICE_URL,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al procesar la solicitud",
+    });
+  }
+});
 
 // Proxy AUTH
 app.use(

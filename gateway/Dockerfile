@@ -1,21 +1,21 @@
-# Usa Node LTS con soporte para TypeScript
+# Usa Node 18 oficial con soporte para TypeScript
 FROM node:18
 
-# Establece directorio de trabajo
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia archivos necesarios
+# Copia los archivos necesarios
 COPY package*.json ./
-RUN npm install
+COPY tsconfig.json ./
+COPY src ./src
 
-# Copia el resto del código
-COPY . .
+# Instala las dependencias
+RUN npm install
 
 # Compila TypeScript
 RUN npm run build
 
-# Exponer puerto solo en gateway
-# AUTH y PRODUCTS no necesitan EXPOSE
 
-# Comando para ejecutar
+
+# Comando para iniciar la app
 CMD ["npm", "run", "start"]

@@ -3,14 +3,14 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import { swaggerDocs } from "./documentation/swagger.config";
 import cors from "cors";
-import expressWinston from "express-winston";
+
 // middlewares
 import errorHandler from "./middlewares/error.middleware";
 import errorRoute from "./middlewares/error.route";
 
 // rutes
 import productsRouter from "./module/products/product.routes";
-import { logger } from "./utilities/winsdom";
+import { winstonMiddleware } from "./middlewares/winton";
 
 const app = express();
 
@@ -18,21 +18,7 @@ const app = express();
 app.use(express.json({ limit: "300kb" }));
 app.use(cors());
 
-app.use(
-  expressWinston.logger({
-    winstonInstance: logger,
-    level: "info",
-    meta: true, // para que mande info extra (podés poner false si querés menos)
-    msg: "HTTP {{req.method}} {{req.url}} - {{res.statusCode}}",
-    dynamicMeta: (req, res) => {
-      return {
-        httpMessage: `HTTP ${req.method} ${req.url} - ${res.statusCode}`,
-      };
-    },
-    colorize: true,
-  })
-);
-
+app.use(winstonMiddleware);
 // Rutas principales del microservicio de productos
 app.use("/", productsRouter);
 app.use("/documentacion", swaggerUi.serve, swaggerUi.setup(swaggerDocs));

@@ -1,29 +1,36 @@
+version: '3.8'
 
 services:
   gateway:
     build: ./gateway
     ports:
-      - "4000:4000"  # Exponemos solo el gateway
+      - "4000:4000"
+    env_file:
+      - ./gateway/.env.production
     depends_on:
       - auth
       - products
     networks:
-      - micro-net
+      - micro_net
 
   auth:
     build: ./auth
+    env_file:
+      - ./auth/.env.production
     expose:
-      - "8085"  # No se expone a host, pero accesible por los otros servicios
+      - "8085"
     networks:
-      - micro-net
+      - micro_net
 
   products:
     build: ./products
+    env_file:
+      - ./products/.env.production
     expose:
       - "8083"
     networks:
-      - micro-net
+      - micro_net
 
 networks:
-  micro-net:
+  micro_net:
     driver: bridge
