@@ -8,6 +8,8 @@ import { AuthModel } from "./auth.service";
 import { authVerification } from "../../utilities/joi";
 import AppError from "../../utilities/error/appError";
 import { UserDocument } from "./auth.schema";
+import { logger } from "../../utilities/winsdom";
+import { IUser } from "./auth.interface";
 
 export class AuthController {
   // REGISTRAR USUARIO
@@ -30,19 +32,12 @@ export class AuthController {
       }
 
       const { email, password } = req.body;
-      const user = await AuthModel.register({ email, password });
+      const user: IUser = await AuthModel.register({ email, password });
 
-      if (!user) {
-        throw new AppError(
-          "ConflictError",
-          409,
-          "No se pudo crear el usuario.",
-          "Ya existe un usuario con este correo o hubo un problema al registrarlo.",
-          true
-        );
-      }
-
-      res.status(201).json({ message: "Usuario registrado correctamente." });
+      res.status(201).json({
+        message: "Usuario registrado correctamente.",
+        userid: user.email,
+      });
     } catch (error) {
       next(error);
     }
@@ -104,16 +99,8 @@ export class AuthController {
       });
 
       res.status(200).json({ message: "Autenticación exitosa.", token });
-    } catch (error: any) {
-      next(
-        new AppError(
-          "InternalServerError",
-          500,
-          error.message || "Error al iniciar sesión.",
-          "Se produjo un error inesperado al iniciar sesión.",
-          true
-        )
-      );
+    } catch (error) {
+      next(error);
     }
   };
 
@@ -127,15 +114,7 @@ export class AuthController {
       res.clearCookie("token");
       res.status(200).json({ message: "Sesión cerrada exitosamente." });
     } catch (error: any) {
-      next(
-        new AppError(
-          "InternalServerError",
-          500,
-          error.message || "Error al cerrar sesión.",
-          "No se pudo cerrar la sesión correctamente.",
-          true
-        )
-      );
+      next(error);
     }
   };
 }

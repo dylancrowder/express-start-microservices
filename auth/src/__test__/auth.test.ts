@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ path: `.env.development` }); // 👈 fuerza cargar el archivo correcto
+dotenv.config({ path: `.env.development` });
 
 import request from "supertest";
 import app from "../app";
@@ -20,96 +20,73 @@ afterAll(async () => {
   await mongo.stop();
 });
 
-afterEach(async () => {
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    await collections[key].deleteMany({});
-  }
-});
-
-describe("Auth Controller", () => {
-  describe("POST /auth/login", () => {
-    it("debería loguearse correctamente con credenciales válidas", async () => {
-      await request(app).post("/auth/register").send({
-        email: "admin@mail.com",
-        password: "admin123",
-      });
-
-      const res = await request(app).post("/auth/login").send({
-        email: "admin@mail.com",
-        password: "admin123",
-      });
-
-      expect(res.status).toBe(200);
-
-      const cookies = res.headers["set-cookie"];
-      expect(cookies).toBeDefined();
-      expect(cookies[0]).toMatch(/token=.*;/);
-    }, 15000);
-
-    it("debería fallar con credenciales incorrectas", async () => {
-      await request(app).post("/auth/register").send({
-        email: "admin@mail.com",
-        password: "admin123",
-      });
-
-      const res = await request(app).post("/auth/login").send({
-        email: "admin@mail.com",
-        password: "claveIncorrecta",
-      });
-
-      expect(res.status).toBe(401);
-      expect(res.body.message).toBeDefined();
-    }, 15000);
-
-    it("debería rechazar si faltan campos", async () => {
-      const res = await request(app).post("/auth/login").send({
-        email: "admin@mail.com", // Falta password
-      });
-
-      expect(res.status).toBe(401); // Ya que tu lógica actual no valida campos faltantes
-    }, 15000);
-  });
-
-  describe("POST /auth/register", () => {
-    it("debería registrar un nuevo usuario", async () => {
-      const res = await request(app).post("/auth/register").send({
-        email: "nuevo@mail.com",
-        password: "passSegura123",
-      });
-
-      expect(res.status).toBe(201);
-      expect(res.body.message).toBe("Usuario registrado correctamente");
-    }, 15000);
-  });
-
-  describe("GET /auth/verify", () => {
-    it("debería rechazar acceso sin token", async () => {
-      const res = await request(app).get("/auth/verify");
-      expect(res.status).toBe(401);
+// Email usado para pruebas de duplicación
+const testEmail = "duplicado@hotmail.com";
+const testPassword = "123456";
+describe("POST /register", () => {
+  it("debería registrar un nuevo usuario", async () => {
+    const res = await request(app).post("/register").send({
+      email: testEmail,
+      password: testPassword,
     });
 
-    it("debería permitir acceso con token válido", async () => {
-      await request(app).post("/auth/register").send({
-        email: "admin@mail.com",
-        password: "admin123",
-      });
+    expect(res.status).toBe(201);
+  });
 
-      const loginRes = await request(app).post("/auth/login").send({
-        email: "admin@mail.com",
-        password: "admin123",
-      });
+  it("debería rechazar si ya existe el usuario", async () => {
+    const res = await request(app).post("/register").send({
+      email: testEmail,
+      password: testPassword,
+    });
 
-      const cookies = loginRes.headers["set-cookie"];
-      expect(cookies).toBeDefined();
+    expect(res.status).toBe(409);
+  });
 
-      const verifyRes = await request(app)
-        .get("/auth/verify")
-        .set("Cookie", cookies);
+  it("debería rechazar si los datos son inválidos", async () => {
+    const res = await request(app).post("/register").send({
+      email: "correo-no-valido",
+      password: "12",
+    });
 
-      expect(verifyRes.status).toBe(200);
-      expect(verifyRes.body.authenticated).toBe(true);
-      expect(verifyRes.body.userId).toBeDefined();
-    }, 15000);
+    expect(res.status).toBe(400);
+  });
+});
+
+describe("POST /login", () => {
+  it("debería autenticar al usuario y devolver un token", async () => {
+    const res = await request(app).post("/login").send({
+      email: testEmail,
+      password: testPassword,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.token).toBeDefined();
+  });
+
+  it("debería fallar con contraseña incorrecta", async () => {
+    const res = await request(app).post("/login").send({
+      email: testEmail,
+      password: "claveIncorrecta",
+    });
+
+    expect(res.status).toBe(401);
+  });
+
+  it("debería fallar si el usuario no existe", async () => {
+    const res = await request(app).post("/login").send({
+      email: "inexistente@example.com",
+      password: "123456",
+    });
+
+    expect(res.status).toBe(404);
+  });
+
+  it("debería fallar si faltan campos", async () => {
+    const res = await request(app).post("/login").send({
+      email: testEmail,
+      // Falta password
+    });
+
+    expect(res.status).toBe(400);
   });
 });

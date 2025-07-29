@@ -2,29 +2,51 @@
 import bcrypt from "bcryptjs";
 import User, { UserDocument } from "./auth.schema";
 import { RegisterDTO } from "./auth.interface";
+import AppError from "../../utilities/error/appError";
 
 export class AuthModel {
-  // Method to register a new user
   static async register({
     email,
     password,
-  }: RegisterDTO): Promise<UserDocument | undefined> {
+  }: RegisterDTO): Promise<UserDocument> {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new User({ email, password: hashedPassword });
       return await newUser.save();
     } catch (error: any) {
-      throw new Error("Error al registrar el usuario: " + error.message);
+      if (error.code === 11000) {
+        // Error de duplicado en MongoDB
+        throw new AppError(
+          "ConflictError",
+          409,
+          error,
+          "Ya existe un usuario con este correo.",
+          true
+        );
+      }
+
+      throw new AppError(
+        "InternalServiceError",
+        500,
+        error,
+        "Hubo un problema al registrar el usuario.",
+        true
+      );
     }
   }
 
-  // Method to authenticate a user
   static async findByEmail(email: string): Promise<UserDocument | null> {
     try {
       const usuario = await User.findOne({ email });
       return usuario;
-    } catch (error) {
-      throw new Error("Error al buscar el usuario:" + error);
+    } catch (error: any) {
+      throw new AppError(
+        "InternalServiceError",
+        500,
+        error,
+        "Hubo un error al buscar el usuario por correo.",
+        true
+      );
     }
   }
 }
