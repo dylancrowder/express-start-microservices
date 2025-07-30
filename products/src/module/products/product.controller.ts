@@ -33,4 +33,74 @@ export class ProductController {
       next(err);
     }
   };
+  static getAllProducts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const products = await ProductService.getAllProducts();
+      res.status(200).json(products);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  static async deleteOneProduct(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      const deletedProduct = await ProductService.deleteOneProduct(id);
+
+      if (!deletedProduct) {
+        // Si no se encontró el producto, lanzar error 404
+        throw new AppError(
+          "notFound",
+          404,
+          null,
+          `No se encontró el producto con id ${id}`
+        );
+      }
+
+      res.status(200).json({
+        message: "Producto eliminado con éxito",
+        data: deletedProduct,
+      });
+    } catch (error) {
+      next(error); // pasa el error al middleware de manejo de errores
+    }
+  }
+
+  static async editOneProduct(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+
+      const editedProduct = await ProductService.editOneProduct(id, updateData);
+
+      if (!editedProduct) {
+        throw new AppError(
+          "notFound",
+          404,
+          null,
+          `No se encontró el producto con id ${id}`
+        );
+      }
+
+      res.status(200).json({
+        message: "Producto actualizado con éxito",
+        data: editedProduct,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

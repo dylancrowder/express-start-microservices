@@ -8,7 +8,6 @@ import { AuthModel } from "./auth.service";
 import { authVerification } from "../../utilities/joi";
 import AppError from "../../utilities/error/appError";
 import { UserDocument } from "./auth.schema";
-import { logger } from "../../utilities/winsdom";
 import { IUser } from "./auth.interface";
 
 export class AuthController {

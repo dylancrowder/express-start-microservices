@@ -58,7 +58,7 @@ app.use(
 // Proxy PRODUCTS
 app.use(
   "/products",
-  authenticateJWT,
+  /*  authenticateJWT, */
   proxy(PRODUCTS_SERVICE_URL, {
     proxyReqPathResolver: (req) => req.originalUrl.replace(/^\/products/, ""),
     proxyReqBodyDecorator: (body, req) => body,

@@ -16,8 +16,12 @@ const app = express();
 
 //middleware configuration
 app.use(express.json({ limit: "300kb" }));
-app.use(cors());
-
+app.use(
+  cors({
+    origin: "http://localhost:3000", // solo tu front
+    credentials: true, // si estás usando cookies o auth
+  })
+);
 app.use(winstonMiddleware);
 // Rutas principales del microservicio de productos
 app.use("/", productsRouter);
