@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { logger } from "../utilities/winsdom";
+import { logger } from "@ecomerce/common";
 
 dotenv.config({
   path: `.env.${process.env.NODE_ENV}`,

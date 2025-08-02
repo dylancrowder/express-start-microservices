@@ -1,8 +1,14 @@
-import AppError from "../utilities/error/appError";
-import { Request, Response } from "express";
-import { logger } from "../utilities/winsdom";
+// common/src/middlewares/error.middleware.ts
+import AppError from "../utils/error/appError";
+import { Request, Response, NextFunction } from "express";
+import { logger } from "../utils/winsdom";
 
-function errorHandler(err: Error, req: Request, res: Response): void {
+export default function errorHandler(
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   if (err instanceof AppError) {
     if (err.isOperational) {
       logger.warn({
@@ -48,5 +54,3 @@ function errorHandler(err: Error, req: Request, res: Response): void {
     });
   }
 }
-
-export default errorHandler;

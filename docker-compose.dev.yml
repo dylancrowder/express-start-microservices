@@ -1,15 +1,14 @@
-version: '3.8'
-
 services:
   auth:
     build:
-      context: ./auth
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ./auth/Dockerfile.dev
     ports:
       - "8085:8085"
     volumes:
-      - ./auth:/app
-      - /app/node_modules
+      - ./auth:/app/auth
+      - ./common:/app/common
+      # Eliminamos los mounts de node_modules para evitar conflictos
     env_file:
       - ./auth/.env.development
     networks:
@@ -17,13 +16,14 @@ services:
 
   gateway:
     build:
-      context: ./gateway
-      dockerfile: Dockerfile.dev
-    ports:
+      context: .
+      dockerfile: ./gateway/Dockerfile.dev
+    ports: 
       - "4000:4000"
     volumes:
-      - ./gateway:/app
-      - /app/node_modules
+      - ./gateway:/app/gateway
+      - ./common:/app/common
+      # Sin node_modules montados
     env_file:
       - ./gateway/.env.development
     depends_on:
@@ -34,13 +34,14 @@ services:
 
   products:
     build:
-      context: ./products
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ./products/Dockerfile.dev
     ports:
       - "8083:8083"
     volumes:
-      - ./products:/app
-      - /app/node_modules
+      - ./products:/app/products
+      - ./common:/app/common
+      # Sin node_modules montados
     env_file:
       - ./products/.env.development
     networks:

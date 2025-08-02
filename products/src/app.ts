@@ -5,13 +5,13 @@ import { swaggerDocs } from "./documentation/swagger.config";
 import cors from "cors";
 
 // middlewares
-import errorHandler from "./middlewares/error.middleware";
-import errorRoute from "./middlewares/error.route";
+import { errorHandler } from "@ecomerce/common";
+import { errorRoute } from "@ecomerce/common";
 
 // rutes
 import productsRouter from "./module/products/product.routes";
-import { winstonMiddleware } from "./middlewares/winton";
-
+/* import { winstonMiddleware } from "@ecomerce/common";
+ */
 const app = express();
 
 //middleware configuration
@@ -22,7 +22,7 @@ app.use(
     credentials: true, // si estás usando cookies o auth
   })
 );
-app.use(winstonMiddleware);
+/* app.use(winstonMiddleware); */
 // Rutas principales del microservicio de productos
 app.use("/", productsRouter);
 app.use("/documentacion", swaggerUi.serve, swaggerUi.setup(swaggerDocs));

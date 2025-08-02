@@ -11,6 +11,7 @@
     "inspect": "cross-env NODE_ENV=development node --inspect -r ts-node/register src/server.ts"
   },
   "dependencies": {
+    "@ecomerce/common": "file:../common",
     "axios": "^1.10.0",
     "compression": "1.7.5",
     "cookie-parser": "^1.4.7",
@@ -29,6 +30,7 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@ecomerce/common": "file:../common",
     "@types/compression": "1.7.5",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "2.8.17",

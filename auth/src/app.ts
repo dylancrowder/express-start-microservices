@@ -3,12 +3,12 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
-import errorHandler from "./middlewares/error.middleware";
-import errorRoute from "./middlewares/error.route";
+
+import { errorHandler, errorRoute } from "@ecomerce/common";
 import { swaggerDocs } from "./documentation/swagger.config";
 //RUTAS
 import authRoutes from "./module/register/auth.routes";
-import { winstonMiddleware } from "./middlewares/winston";
+import { winstonMiddleware } from "@ecomerce/common";
 
 const app = express();
 

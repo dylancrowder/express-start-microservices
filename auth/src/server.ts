@@ -3,7 +3,7 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV || "development"}` });
 
 import app from "./app";
 import { initMongo } from "./db/db_connect";
-import { logger } from "./utilities/winsdom";
+import { logger } from "@ecomerce/common";
 
 const PORT = process.env.APP_PORT || 8085;
 
