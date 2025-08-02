@@ -33,7 +33,7 @@ const PRODUCTS_SERVICE_URL = isProduction
 app.get("/", (req, res) => {
   try {
     res.status(200).json({
-      message: "Bienvenido a la API  ",
+      message: "Bienvenido a la API de microservicios ",
       services: {
         auth: AUTH_SERVICE_URL,
         products: PRODUCTS_SERVICE_URL,
