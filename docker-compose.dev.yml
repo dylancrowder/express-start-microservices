@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./auth:/app
+      - /app/node_modules
+    env_file:
+      - ./auth/.env.development
+    networks:
+      - micro_net
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./gateway:/app
+      - /app/node_modules
+    env_file:
+      - ./gateway/.env.development
+    depends_on:
+      - auth
+      - products
+    networks:
+      - micro_net
+
+  products:
+    build:
+      context: ./products
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./products:/app
+      - /app/node_modules
+    env_file:
+      - ./products/.env.development
+    networks:
+      - micro_net
+
+networks:
+  micro_net:
+    driver: bridge

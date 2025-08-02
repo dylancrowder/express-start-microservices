@@ -33,7 +33,7 @@ const PRODUCTS_SERVICE_URL = isProduction
 app.get("/", (req, res) => {
   try {
     res.status(200).json({
-      message: "Welcome to the Gateway API",
+      message: "Bienvenido a la API  ",
       services: {
         auth: AUTH_SERVICE_URL,
         products: PRODUCTS_SERVICE_URL,
