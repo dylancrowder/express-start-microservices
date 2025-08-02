@@ -3,7 +3,7 @@
   "description": "Authentication service for E-commerce application",
   "version": "1.0.0",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon --watch src --ext ts,json --exec ts-node src/server.ts --legacy-watch",
+    "dev": "cross-env NODE_ENV=development nodemon --watch src --ext ts,json --exec ts-node -r tsconfig-paths/register src/server.ts --legacy-watch",
     "start": "cross-env NODE_ENV=production node dist/server.js",
     "build": "tsc",
     "watch": "tsc --watch",
@@ -35,6 +35,7 @@
     "source-map-support": "0.5.21",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tsconfig-paths": "4.2.0",
     "winston": "3.17.0"
   },
   "devDependencies": {

@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
 
 "paths": {
-  "@ecomerce/common": ["../common/dist"]
+ "@ecomerce/common": ["../common/src"]
 }
     
   },

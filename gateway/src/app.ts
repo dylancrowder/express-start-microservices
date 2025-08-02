@@ -2,8 +2,8 @@
 import express from "express";
 import corsHelmet from "./middleware/corsHelmet";
 import rateLimiter from "./middleware/rateLimiter";
-import { errorHandler, winstonMiddleware } from "@ecomerce/common";
-import { errorRoute } from "@ecomerce/common";
+
+import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
 import proxy from "express-http-proxy";
 import compression from "compression";
 import docsRoutes from "./documentation/documentation.route";
@@ -23,9 +23,9 @@ app.use(docsRoutes);
 
 /* const isProduction = process.env.NODE_ENV === "production"; */
 
-const AUTH_SERVICE_URL = "http://localhost:8085"; /*  "http://auth:8085"; */
+const AUTH_SERVICE_URL = /* "http://localhost:8085" ;*/ "http://auth:8085";
 const PRODUCTS_SERVICE_URL =
-  "http://localhost:8083"; /* "http://products:8083" */
+  /* "http://localhost:8083";  */ "http://products:8083";
 
 app.get("/", (req, res) => {
   try {
