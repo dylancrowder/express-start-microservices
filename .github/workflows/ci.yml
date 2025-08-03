@@ -29,10 +29,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install root deps
-        run: npm install
-        working-directory: .
-
       - name: Install service deps
         run: npm install
 

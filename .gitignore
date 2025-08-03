@@ -1,0 +1,12 @@
+node_modules
+.env.production
+.env.development
+dist
+dist/
+.npmrc 
+.vercel
+.env
+.dockerignore
+.vscode
+.Dockerfile
+.github
