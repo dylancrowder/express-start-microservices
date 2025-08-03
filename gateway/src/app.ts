@@ -21,9 +21,9 @@ app.use(winstonMiddleware);
 
 app.use(docsRoutes);
 
-const AUTH_SERVICE_URL = "http://localhost:8085"; /* "http://auth:8085" */
+const AUTH_SERVICE_URL = /* "http://localhost:8085" */ "http://auth:8085";
 const PRODUCTS_SERVICE_URL =
-  "http://localhost:8083"; /*  "http://products:8083";*/
+  /*  "http://localhost:8083"; */ "http://products:8083";
 
 app.get("/", (req, res) => {
   try {

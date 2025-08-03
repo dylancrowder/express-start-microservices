@@ -1,0 +1,66 @@
+name: Test and Push to Refactor
+
+on:
+  push:
+    branches:
+      - '**'       # cualquier branch
+    paths:
+      - 'auth/**'
+      - 'gateway/**'
+      - 'products/**'
+      - 'common/**'
+      - '.github/workflows/**'
+
+jobs:
+  test-services:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [auth, gateway, products]
+    defaults:
+      run:
+        working-directory: ${{ matrix.service }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root deps
+        run: npm install
+        working-directory: .
+
+      - name: Install service deps
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+  push-to-refactor:
+    needs: test-services
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Push to refactor branch
+        run: |
+          git fetch origin
+          git checkout -B refactor
+          git merge ${{ github.ref_name }} --no-edit
+          git push origin refactor
