@@ -1,11 +1,11 @@
-name: Test and Push to Refactor
+name: Test and Push to Refactor  # Nombre del workflow
 
 on:
   push:
     branches:
-      - '**'       # cualquier branch
+      - '**'       # Se ejecuta en cualquier rama que reciba un push
     paths:
-      - 'auth/**'
+      - 'auth/**'         # Solo se activa si hay cambios en estas carpetas o archivos
       - 'gateway/**'
       - 'products/**'
       - 'common/**'
@@ -13,50 +13,50 @@ on:
 
 jobs:
   test-services:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest    # Corre en un runner con Ubuntu actualizado
     strategy:
       matrix:
-        service: [auth, gateway, products]
+        service: [auth, gateway, products]  # Ejecuta el job para cada uno de estos servicios
     defaults:
       run:
-        working-directory: ${{ matrix.service }}
+        working-directory: ${{ matrix.service }}  # Define el directorio de trabajo según el servicio actual
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4      # Clona el repositorio para acceder al código
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4   # Configura Node.js versión 20 para el runner
         with:
           node-version: 20
 
       - name: Install service deps
-        run: npm install
+        run: npm install               # Instala las dependencias de cada servicio
 
       - name: Build
-        run: npm run build
+        run: npm run build             # Compila/Construye el servicio (por ejemplo TypeScript)
 
       - name: Run tests
-        run: npm test
+        run: npm test                  # Ejecuta los tests definidos para ese servicio
 
   push-to-refactor:
-    needs: test-services
-    runs-on: ubuntu-latest
-    if: success()
+    needs: test-services             # Se ejecuta solo si el job test-services terminó con éxito
+    runs-on: ubuntu-latest           # Corre en un runner Ubuntu
+    if: success()                 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}        # Se asegura de usar la rama donde se hizo el push
+          token: ${{ secrets.GITHUB_TOKEN }}  # Token para autenticación automática
 
       - name: Set Git user
         run: |
-          git config user.name "github-actions[bot]"
+          git config user.name "github-actions[bot]"                 # Configura usuario git para hacer commits/merge
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Push to refactor branch
         run: |
-          git fetch origin
-          git checkout -B refactor
-          git merge ${{ github.ref_name }} --no-edit
-          git push origin refactor
+          git fetch origin                         # Trae información actualizada del remoto
+          git checkout -B refactor                 # Crea o mueve la rama local refactor
+          git merge ${{ github.ref_name }} --no-edit   # Fusiona la rama actual con la rama refactor sin abrir editor
+          git push origin refactor                  # Empuja la rama refactor actualizada al repositorio remoto
