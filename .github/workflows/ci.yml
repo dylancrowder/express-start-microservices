@@ -51,12 +51,12 @@ jobs:
 
       - name: Set Git user
         run: |
-          git config user.name "github-actions[bot]"                 # Configura usuario git para hacer commits/merge
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.dylancrowder "github-actions[bot]"                 
+          git config user.devdylancrowder@outlook.com "github-actions[bot]@users.noreply.github.com"
 
       - name: Push to refactor branch
         run: |
-          git fetch origin                         # Trae información actualizada del remoto
-          git checkout -B refactor                 # Crea o mueve la rama local refactor
-          git merge ${{ github.ref_name }} --no-edit   # Fusiona la rama actual con la rama refactor sin abrir editor
-          git push origin refactor                  # Empuja la rama refactor actualizada al repositorio remoto
+          git fetch origin                        
+          git checkout -B refactor                
+          git merge ${{ github.ref_name }} --no-edit  
+          git push origin refactor                 

@@ -3,18 +3,19 @@
     "target": "ES6",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./src", // Mantiene src como raíz de compilación del gateway
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-
-"paths": {
-  "@ecomerce/common": ["../common/src"]
-}
-
-    
+    "baseUrl": ".", // importante para que "paths" funcione
+    "paths": {
+      "@ecomerce/common/*": ["../common/src/*"] // importa desde common
+    }
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",          // incluye tus archivos normales del servicio
+    "../common/src/**/*.ts" // agrega también los archivos comunes
+  ],
   "exclude": ["node_modules"]
 }
