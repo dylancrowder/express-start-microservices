@@ -1,7 +1,9 @@
 import winston from "winston";
 
+const isTest = process.env.NODE_ENV === "test";
+
 export const logger = winston.createLogger({
-  level: "debug",
+  level: isTest ? "error" : "debug",
   format: winston.format.combine(
     winston.format.colorize({ all: true }),
     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
@@ -26,7 +28,6 @@ export const logger = winston.createLogger({
         [key: string]: unknown;
       };
 
-      // Limpieza de meta vacío
       if (rest.meta && Object.keys(rest.meta).length === 0) {
         delete rest.meta;
       }
@@ -34,7 +35,6 @@ export const logger = winston.createLogger({
         delete info.meta;
       }
 
-      // Stack trace
       const stackTrace = stack || (error && error.stack);
       const cleanRest = { ...rest };
       delete cleanRest.stack;
@@ -47,7 +47,6 @@ export const logger = winston.createLogger({
 
       const stackInfo = stackTrace ? `\n📌 Stack trace:\n${stackTrace}` : "";
 
-      // Primero mensaje HTTP si existe, sino mensaje normal
       const firstMsg = httpMessage ? httpMessage : message;
 
       return `🕒 [${timestamp}] ${level}: ${firstMsg}${
@@ -55,5 +54,9 @@ export const logger = winston.createLogger({
       }${stackInfo}`;
     })
   ),
-  transports: [new winston.transports.Console()],
+  transports: [
+    new winston.transports.Console({
+      silent: isTest, // SILENCIA TODO EN TEST
+    }),
+  ],
 });
