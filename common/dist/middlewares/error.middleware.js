@@ -3,11 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = errorHandler;
-// common/src/middlewares/error.middleware.ts
+exports.errorHandler = void 0;
 const appError_1 = __importDefault(require("../utils/error/appError"));
 const winsdom_1 = require("../utils/winsdom");
-function errorHandler(err, req, res, next) {
+const errorHandler = (err, req, res, next) => {
     if (err instanceof appError_1.default) {
         if (err.isOperational) {
             winsdom_1.logger.warn({
@@ -50,4 +49,5 @@ function errorHandler(err, req, res, next) {
             message: "Error interno del servidor",
         });
     }
-}
+};
+exports.errorHandler = errorHandler;

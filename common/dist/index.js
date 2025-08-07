@@ -13,17 +13,16 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.errorRoute = exports.errorHandler = void 0;
+exports.hola = exports.errorRoute = exports.errorHandler = void 0;
 // common/src/index.ts
 var error_middleware_1 = require("./middlewares/error.middleware");
-Object.defineProperty(exports, "errorHandler", { enumerable: true, get: function () { return __importDefault(error_middleware_1).default; } });
+Object.defineProperty(exports, "errorHandler", { enumerable: true, get: function () { return error_middleware_1.errorHandler; } });
 var error_route_1 = require("./middlewares/error.route");
 Object.defineProperty(exports, "errorRoute", { enumerable: true, get: function () { return error_route_1.errorRoute; } });
 __exportStar(require("./utils/joi"), exports);
 __exportStar(require("./utils/error/appError"), exports);
 __exportStar(require("./middlewares/winton"), exports);
 __exportStar(require("./utils/winsdom"), exports);
+var test_1 = require("./middlewares/test");
+Object.defineProperty(exports, "hola", { enumerable: true, get: function () { return test_1.hola; } });

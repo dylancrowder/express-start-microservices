@@ -5,3 +5,4 @@ declare class AppError extends Error {
     constructor(name: string, httpCode: number, message: any, responseMessage: string, isOperational?: boolean);
 }
 export default AppError;
+//# sourceMappingURL=appError.d.ts.map

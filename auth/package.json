@@ -1,5 +1,5 @@
 {
-  "name": "ecomerce-auth",
+  "name": "auth",
   "description": "Authentication service for E-commerce application",
   "version": "1.0.0",
   "scripts": {
@@ -12,19 +12,20 @@
     "inspect": "cross-env NODE_ENV=development node --inspect -r ts-node/register src/server.ts"
   },
   "dependencies": {
-    "@ecomerce/common": "file:../common",
+    "@ecomerce/common": "*",
+    "@types/express": "^5.0.3",
     "@types/winston": "2.4.4",
     "bcrypt": "5.1.1",
     "bcryptjs": "3.0.2",
     "body-parser": "1.20.3",
-    "compression": "1.7.5",
+    "compression": "1.8.1",
     "cookie-parser": "1.4.7",
     "cors": "~2.8.5",
     "cross-env": "7.0.3",
     "dotenv": "16.4.5",
-    "express": "4.21.1",
+    "express": "^5.1.0",
     "express-rate-limit": "7.4.1",
-    "express-session": "1.18.1",
+    "express-session": "1.18.2",
     "express-winston": "4.2.0",
     "helmet": "^8.0.0",
     "joi": "^17.13.3",
@@ -36,7 +37,6 @@
     "source-map-support": "0.5.21",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "tsconfig-paths": "4.2.0",
     "winston": "3.17.0"
   },
   "devDependencies": {
@@ -44,7 +44,6 @@
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "1.4.8",
     "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.0",
     "@types/express-winston": "3.0.4",
     "@types/jest": "29.5.14",
@@ -55,7 +54,7 @@
     "@types/supertest": "6.0.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.7",
-    "eslint": "9.15.0",
+    "eslint": "9.32.0",
     "eslint-plugin-security": "3.0.1",
     "eslint-plugin-you-dont-need-lodash-underscore": "6.14.0",
     "globals": "15.12.0",
@@ -65,6 +64,7 @@
     "supertest": "7.0.0",
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
+    "tsconfig-paths": "4.2.0",
     "typescript": "5.6.3",
     "typescript-eslint": "8.15.0"
   }

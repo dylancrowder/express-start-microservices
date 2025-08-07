@@ -4,11 +4,10 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 
-import { errorHandler, errorRoute } from "@ecomerce/common";
 import { swaggerDocs } from "./documentation/swagger.config";
 //RUTAS
 import authRoutes from "./module/register/auth.routes";
-import { winstonMiddleware } from "@ecomerce/common";
+import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
 
 const app = express();
 
@@ -17,6 +16,7 @@ app.use(cors());
 app.use(express.json({ limit: "300kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use(winstonMiddleware);
 
 // Rutas principales del microservicio de autenticación

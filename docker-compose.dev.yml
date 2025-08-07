@@ -1,52 +1,23 @@
+version: '3.8'
+
 services:
   auth:
-    build:
-      context: .
-      dockerfile: ./auth/Dockerfile.dev
+    build: ./auth
     ports:
-      - "8085:8085"
-    volumes:
-      - ./auth:/app/auth
-      - ./common:/app/common
-      # Eliminamos los mounts de node_modules para evitar conflictos
-    env_file:
-      - ./auth/.env.development
-    networks:
-      - micro_net
-
-  gateway:
-    build:
-      context: .
-      dockerfile: ./gateway/Dockerfile.dev
-    ports: 
       - "4000:4000"
-    volumes:
-      - ./gateway:/app/gateway
-      - ./common:/app/common
-      # Sin node_modules montados
-    env_file:
-      - ./gateway/.env.development
-    depends_on:
-      - auth
-      - products
-    networks:
-      - micro_net
+    environment:
+      - NODE_ENV=production
 
   products:
-    build:
-      context: .
-      dockerfile: ./products/Dockerfile.dev
+    build: ./products
     ports:
-      - "8083:8083"
-    volumes:
-      - ./products:/app/products
-      - ./common:/app/common
-      # Sin node_modules montados
-    env_file:
-      - ./products/.env.development
-    networks:
-      - micro_net
+      - "3003:3000"
+    environment:
+      - NODE_ENV=production
 
-networks:
-  micro_net:
-    driver: bridge
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production

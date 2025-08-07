@@ -1,18 +1,12 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
     "rootDir": "src",
-    "module": "commonjs",
-    "target": "ES2020",
-    "declaration": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-     "baseUrl": ".",
-    "paths": {
-      "@ecomerce/common": ["../common/src"],
-      "@ecomerce/common/*": ["../common/src/*"]
-    }
+    "outDir": "dist",
+    "composite": true,           // para build incremental y referencias
+    "declaration": true,         // para generar *.d.ts
+    "declarationMap": true       // para mapear tipos en debug
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

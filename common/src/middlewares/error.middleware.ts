@@ -1,14 +1,8 @@
-// common/src/middlewares/error.middleware.ts
+import { ErrorRequestHandler } from "express";
 import AppError from "../utils/error/appError";
-import { Request, Response, NextFunction } from "express";
 import { logger } from "../utils/winsdom";
 
-export default function errorHandler(
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof AppError) {
     if (err.isOperational) {
       logger.warn({
@@ -53,4 +47,4 @@ export default function errorHandler(
       message: "Error interno del servidor",
     });
   }
-}
+};

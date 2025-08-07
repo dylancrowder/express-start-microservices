@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@ecomerce/common": ["common/src"]
-    }
-  }
-}
