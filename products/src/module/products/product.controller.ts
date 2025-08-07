@@ -1,7 +1,8 @@
 // src/controllers/product.controller.ts
 import { Request, Response, NextFunction } from "express";
-import AppError from "../../utilities/error/appError";
-import { createProductSchema } from "../../utilities/joi";
+import AppError from "../../../../common/dist/utils/error/appError";
+import { createProductSchema } from "@ecomerce/common";
+
 import { ProductService } from "./products.services";
 
 export class ProductController {
@@ -21,7 +22,7 @@ export class ProductController {
         throw new AppError(
           "ValidationError",
           400,
-          error.details.map((d) => d.message).join(", "),
+          error,
           "Datos inválidos. Por favor, revisa los campos del producto.",
           true
         );

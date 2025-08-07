@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Product } from "./productDTO";
 import { ProductDocument } from "./product.schema";
-import AppError from "../../utilities/error/appError";
+import AppError from "../../../../common/dist/utils/error/appError";
 import ProductModel from "./product.schema";
 
 export class ProductService {

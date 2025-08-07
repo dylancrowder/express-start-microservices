@@ -5,12 +5,10 @@ import { swaggerDocs } from "./documentation/swagger.config";
 import cors from "cors";
 
 // middlewares
-import errorHandler from "./middlewares/error.middleware";
-import errorRoute from "./middlewares/error.route";
 
 // rutes
 import productsRouter from "./module/products/product.routes";
-import { winstonMiddleware } from "./middlewares/winton";
+import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
 
 const app = express();
 

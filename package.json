@@ -1,0 +1,20 @@
+{
+  "name": "express-start-microservices",
+  "private": true,
+  "version": "0.0.1",
+  "workspaces": [
+    "auth",
+    "products",
+    "gateway",
+    "common"
+  ],
+  "devDependencies": {
+    "turbo": "^2.5.5"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start:auth": "turbo run dev --filter=auth"
+  },
+  "packageManager": "npm@9.8.0"
+}

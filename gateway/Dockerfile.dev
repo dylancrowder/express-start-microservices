@@ -1,12 +1,20 @@
 FROM node:20-alpine
 
-
-# Evita errores de nodemon en sistemas como Alpine
 RUN apk add --no-cache bash
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+COPY gateway/package*.json ./gateway/
+COPY common/package*.json ./common/
+
+RUN npm install --prefix ./common
+RUN npm install --prefix ./gateway
+
+COPY common ./common
+COPY gateway ./gateway
+
+RUN npm run build --prefix ./common
+
+WORKDIR /app/gateway
 
 CMD ["npm", "run", "dev"]

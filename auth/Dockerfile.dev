@@ -1,10 +1,26 @@
+# Imagen base liviana
 FROM node:20-alpine
 
-# Evita errores de nodemon en sistemas como Alpine
+# Instalar bash para scripts y nodemon si es necesario
 RUN apk add --no-cache bash
+
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Copiar package.json y package-lock.json de auth y common para instalar deps
+COPY auth/package*.json ./auth/
+COPY common/package*.json ./common/
+
+# Instalar dependencias para common y auth dentro del contenedor
+RUN npm install --prefix ./common
+RUN npm install --prefix ./auth
+
+# Copiar código fuente
+COPY common ./common
+COPY auth ./auth
+
+# Build common (si usás TypeScript compilado)
+RUN npm run build --prefix ./common
+
+WORKDIR /app/auth
 
 CMD ["npm", "run", "dev"]
