@@ -4,8 +4,6 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerDocs } from "./documentation/swagger.config";
 import cors from "cors";
 
-// middlewares
-
 // rutes
 import productsRouter from "./module/products/product.routes";
 import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
@@ -16,8 +14,8 @@ const app = express();
 app.use(express.json({ limit: "300kb" }));
 app.use(
   cors({
-    origin: "http://localhost:3000", // solo tu front
-    credentials: true, // si estás usando cookies o auth
+    origin: "http://localhost:3000",
+    credentials: true,
   })
 );
 app.use(winstonMiddleware);

@@ -1,22 +1,33 @@
-# Usa Node 18 oficial con soporte para TypeScript
+
 FROM node:20-alpine AS builder
 
-# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-
-# Copia los archivos necesarios
+# Copiamos archivos necesarios para cachear dependencias y configuración turbo
 COPY package*.json ./
-COPY tsconfig.json ./
-COPY src ./src
+COPY turbo.json ./
+COPY tsconfig.base.json ./     
 
-# Instala las dependencias
-RUN npm install
+# Copiamos carpetas comunes y del servicio
+COPY common ./common
+COPY products ./products
 
-# Compila TypeScript
-RUN npm run build
+RUN npm install && npm cache clean --force
 
+RUN npx turbo run build --filter=products...
 
+# Etapa runner
+FROM node:20-alpine AS runner
 
-# Comando para iniciar la app
-CMD ["npm", "run", "start"]
+WORKDIR /app
+
+COPY package*.json ./
+COPY turbo.json ./
+RUN npm ci --production && npm cache clean --force
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/products/dist ./dist
+
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
+CMD ["node", "dist/server.js"]

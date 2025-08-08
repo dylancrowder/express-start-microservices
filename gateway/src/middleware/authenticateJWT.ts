@@ -7,7 +7,13 @@ interface DecodedUser {
   role: string;
 }
 
-// Extiendo la interface Request para agregar la propiedad user
+import "express-serve-static-core";
+
+interface DecodedUser {
+  userId: string;
+  role: string;
+}
+
 declare module "express-serve-static-core" {
   interface Request {
     user?: DecodedUser;
