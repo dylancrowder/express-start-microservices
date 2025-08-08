@@ -1,20 +1,29 @@
+# Imagen base
 FROM node:20-alpine
 
+# Instala bash (necesario para algunas herramientas)
 RUN apk add --no-cache bash
 
+# Directorio de trabajo raíz
 WORKDIR /app
 
-COPY gateway/package*.json ./gateway/
+# Copiar los package.json primero (para cache de npm install)
 COPY common/package*.json ./common/
+COPY gateway/package*.json ./gateway/
 
+# Instalar dependencias por separado para cachear mejor
 RUN npm install --prefix ./common
 RUN npm install --prefix ./gateway
 
+# Copiar el resto del código fuente
 COPY common ./common
 COPY gateway ./gateway
 
+# Build de common (solo si es necesario)
 RUN npm run build --prefix ./common
 
+# Establecer directorio de trabajo principal
 WORKDIR /app/gateway
 
-CMD ["npm", "run", "dev"]
+# Comando de desarrollo con hot reload
+CMD ["node", "run", "dev"]

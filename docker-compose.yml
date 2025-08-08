@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   gateway:
-    build: ./gateway
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
     ports:
       - "4000:4000"
     env_file:
@@ -14,7 +14,9 @@ services:
       - micro_net
 
   auth:
-    build: ./auth
+    build:
+      context: .
+      dockerfile: ./auth/Dockerfile
     env_file:
       - ./auth/.env.production
     expose:
@@ -23,7 +25,9 @@ services:
       - micro_net
 
   products:
-    build: ./products
+    build:
+      context: .
+      dockerfile: ./products/Dockerfile
     env_file:
       - ./products/.env.production
     expose:

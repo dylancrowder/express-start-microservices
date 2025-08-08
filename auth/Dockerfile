@@ -1,20 +1,34 @@
-# Usa Node 18 oficial con soporte para TypeScript
+# syntax=docker/dockerfile:1.4
 FROM node:20-alpine AS builder
 
-# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia los archivos necesarios
+# Copiamos archivos para cachear deps y configuración turborepo y tsconfig base
 COPY package*.json ./
-COPY tsconfig.json ./
-COPY src ./src
+COPY turbo.json ./
+COPY tsconfig.base.json ./
 
-# Instala las dependencias
-RUN npm install
+# Copiamos carpetas comunes y del servicio auth
+COPY common ./common
+COPY auth ./auth
 
-# Compila TypeScript
-RUN npm run build
+RUN npm install && npm cache clean --force
 
+RUN npx turbo run build --filter=auth...
 
-# Comando para iniciar la app
-CMD ["npm", "run", "start"]
+# ----------------------------------------
+# Etapa runner
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY turbo.json ./
+RUN npm ci --production && npm cache clean --force
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/auth/dist ./dist
+
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
+CMD ["node", "dist/server.js"]

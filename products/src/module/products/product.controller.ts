@@ -6,6 +6,7 @@ import { createProductSchema } from "@ecomerce/common";
 import { ProductService } from "./products.services";
 
 export class ProductController {
+  // CREAR PRODUCTOS
   static createProducts = async (
     req: Request,
     res: Response,
@@ -34,6 +35,7 @@ export class ProductController {
       next(err);
     }
   };
+  // CONSEGUIR TODOS LOS PRODUCTOS
   static getAllProducts = async (
     req: Request,
     res: Response,
@@ -46,7 +48,7 @@ export class ProductController {
       next(err);
     }
   };
-
+  // ELIMINAR TODOS LOS PRODUCTOS
   static async deleteOneProduct(
     req: Request,
     res: Response,
@@ -75,7 +77,7 @@ export class ProductController {
       next(error); // pasa el error al middleware de manejo de errores
     }
   }
-
+  // EDITAR PRODUCTOS
   static async editOneProduct(
     req: Request,
     res: Response,

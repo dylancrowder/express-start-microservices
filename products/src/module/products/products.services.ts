@@ -59,8 +59,8 @@ export class ProductService {
         id,
         updateData,
         {
-          new: true, // para devolver el documento actualizado
-          runValidators: true, // para validar los datos con el schema
+          new: true,
+          runValidators: true,
         }
       );
       return updatedProduct;
