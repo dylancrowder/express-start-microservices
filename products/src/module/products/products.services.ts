@@ -63,6 +63,9 @@ export class ProductService {
           runValidators: true,
         }
       );
+
+      console.log(updatedProduct);
+
       return updatedProduct;
     } catch (error) {
       throw new AppError(

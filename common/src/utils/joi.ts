@@ -13,3 +13,16 @@ export const authVerification = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
 });
+
+// Validar un ObjectId de MongoDB
+export const idSchema = Joi.object({
+  id: Joi.string()
+    .pattern(/^[0-9a-fA-F]{24}$/) // patrón de ObjectId (24 caracteres hexadecimales)
+    .required()
+    .messages({
+      "string.base": "El ID debe ser un texto",
+      "string.empty": "El ID no puede estar vacío",
+      "string.pattern.base": "El ID no es válido",
+      "any.required": "El ID es obligatorio",
+    }),
+});
