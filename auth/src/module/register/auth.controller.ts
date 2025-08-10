@@ -6,10 +6,10 @@ import bcrypt from "bcryptjs";
 
 import { AuthModel } from "./auth.service";
 
-import AppError from "../../../../common/dist/utils/error/appError";
 import { UserDocument } from "./auth.schema";
 import { IUser } from "./auth.interface";
 import { authVerification } from "@ecomerce/common";
+import AppError from "common/dist/utils/error/appError";
 
 export class AuthController {
   // REGISTRAR USUARIO

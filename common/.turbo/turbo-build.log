@@ -1,4 +1,8 @@
 
 > @ecomerce/common@1.0.0 build
-> tsc -p tsconfig.json
+> tsc && npm run copy-docs
+
+
+> @ecomerce/common@1.0.0 copy-docs
+> copyfiles -u 1 documentation/**/* dist/documentation
 

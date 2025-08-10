@@ -2,9 +2,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import swaggerUi from "swagger-ui-express";
 
-import { swaggerDocs } from "./documentation/swagger.config";
 //RUTAS
 import authRoutes from "./module/register/auth.routes";
 import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
@@ -21,12 +19,6 @@ app.use(winstonMiddleware);
 
 // Rutas principales del microservicio de autenticación
 app.use("/", authRoutes);
-
-// Documentación Swagger
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-app.get("/swagger.json", (_req, res) => {
-  res.json(swaggerDocs);
-});
 
 // Manejo de errores
 app.use(errorHandler);

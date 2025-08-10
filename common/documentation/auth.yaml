@@ -1,0 +1,94 @@
+openapi: 3.0.0
+info:
+  title: API Auth
+  version: 1.0.0
+  description: Documentación del microservicio de autenticación
+servers:
+  - url: http://localhost:4000/auth
+    description: Servidor local
+
+paths:
+  /auth/register:
+    post:
+      summary: Registrar un nuevo usuario
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: usuario@example.com
+                password:
+                  type: string
+                  example: 12345678
+      responses:
+        "201":
+          description: Usuario registrado correctamente
+        "500":
+          description: Error al registrar usuario
+
+  /auth/login:
+    post:
+      summary: Iniciar sesión con email y contraseña
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: usuario@example.com
+                password:
+                  type: string
+                  example: 12345678
+      responses:
+        "200":
+          description: Autenticado correctamente
+        "401":
+          description: Credenciales inválidas
+        "500":
+          description: Error en el login
+
+  /auth/logout:
+    post:
+      summary: Cerrar sesión
+      tags:
+        - Autenticación
+      responses:
+        "200":
+          description: Sesión cerrada
+
+  /auth/verify:
+    get:
+      summary: Verificar si el usuario está autenticado
+      tags:
+        - Autenticación
+      responses:
+        "200":
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authenticated:
+                    type: boolean
+                  userId:
+                    type: string
+        "401":
+          description: Token inválido o no autenticado
