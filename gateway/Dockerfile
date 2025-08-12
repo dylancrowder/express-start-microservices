@@ -3,32 +3,29 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copiamos archivos para cachear deps y configuración turborepo y tsconfig base
-COPY package*.json ./
-COPY turbo.json ./
-COPY tsconfig.base.json ./
-
-# Copiamos carpetas comunes y del servicio gateway
-COPY common ./common
-COPY gateway ./gateway
+COPY package*.json turbo.json tsconfig.base.json ./
+COPY gateway/package*.json gateway/
+COPY common/package*.json common/
 
 RUN npm install && npm cache clean --force
 
+COPY common ./common
+COPY gateway ./gateway
+
 RUN npx turbo run build --filter=gateway...
 
-# ----------------------------------------
-# Etapa runner
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-COPY package*.json ./
-COPY turbo.json ./
-RUN npm ci --production && npm cache clean --force
+COPY gateway/package*.json ./
 
-COPY --from=builder /app/node_modules ./node_modules
+# Copiamos la carpeta common/dist con el código compilado común
+COPY --from=builder /app/common/dist ./common/dist
+# Copiamos el código compilado de gateway
 COPY --from=builder /app/gateway/dist ./dist
 
+ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=512"
 
 CMD ["node", "dist/server.js"]

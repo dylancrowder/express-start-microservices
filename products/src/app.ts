@@ -1,7 +1,7 @@
 // PRODUCTS
 import express from "express";
 import cors from "cors";
-
+import productsRouter from "./module/products/product.routes";
 // rutes
 import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
 
@@ -16,7 +16,7 @@ app.use(
   })
 );
 app.use(winstonMiddleware);
-
+app.use("/", productsRouter);
 // Manejo de errores
 app.use(errorRoute);
 app.use(errorHandler);

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Product } from "./productDTO";
 import { ProductDocument } from "./product.schema";
-import AppError from "../../../../common/dist/utils/error/appError";
 import ProductModel from "./product.schema";
+import AppError from "common/src/utils/error/appError";
 
 export class ProductService {
   static async createProduct(body: Product): Promise<ProductDocument> {

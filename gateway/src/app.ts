@@ -56,7 +56,7 @@ const PRODUCTS_SERVICE_URL =
 app.use("/auth", createProxy(AUTH_SERVICE_URL, "/auth"));
 app.use(
   "/products",
-  authenticateJWT,
+  /*   authenticateJWT, */
   createProxy(PRODUCTS_SERVICE_URL, "/products", true)
 );
 

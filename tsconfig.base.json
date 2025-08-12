@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",              
     "paths": {
-      "@ecomerce/common": ["./common/dist"]
+      "@ecomerce/common": ["./common/src"]
     }
   }
 }

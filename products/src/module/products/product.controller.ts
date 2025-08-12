@@ -1,9 +1,8 @@
 // src/controllers/product.controller.ts
 import { Request, Response, NextFunction } from "express";
-import AppError from "../../../../common/dist/utils/error/appError";
 import { createProductSchema, idSchema } from "@ecomerce/common";
-
 import { ProductService } from "./products.services";
+import AppError from "common/src/utils/error/appError";
 
 export class ProductController {
   // CREAR PRODUCTOS
