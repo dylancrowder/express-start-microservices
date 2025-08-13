@@ -1,31 +1,32 @@
-# syntax=docker/dockerfile:1.4
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json turbo.json tsconfig.base.json ./
-COPY auth/package*.json auth/
-COPY common/package*.json common/
+# Copiar tsconfig.base.json primero para evitar errores
+COPY tsconfig.base.json ./
 
-RUN npm install && npm cache clean --force
+COPY package*.json ./
+COPY common/package*.json ./common/
+COPY auth/package*.json ./auth/
+
+RUN npm install
 
 COPY common ./common
 COPY auth ./auth
 
-RUN npx turbo run build --filter=auth...
+RUN cd auth && npm run build
 
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-COPY auth/package*.json ./
+COPY package*.json ./
+COPY common/package*.json ./common/
+COPY auth/package*.json ./auth/
 
-# Copiamos la carpeta common/dist con el código compilado común
+RUN npm install --omit=dev
+
 COPY --from=builder /app/common/dist ./common/dist
-# Copiamos el código compilado de auth
-COPY --from=builder /app/auth/dist ./dist
+COPY --from=builder /app/auth/dist ./auth/dist
 
-ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=512"
-
-CMD ["node", "dist/server.js"]
+CMD ["node", "auth/dist/server.js"]

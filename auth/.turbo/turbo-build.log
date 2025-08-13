@@ -1,4 +1,4 @@
 
 > auth@1.0.0 build
-> tsc
+> tsc -b
 

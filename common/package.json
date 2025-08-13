@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc && npm run copy-docs",
+    "build": "tsc -b && npm run copy-docs",
     "copy-docs": "copyfiles -u 1 documentation/**/* dist/documentation"
   },
   "dependencies": {

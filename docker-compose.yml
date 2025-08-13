@@ -1,42 +1,41 @@
 version: "3.9"
 
 services:
-  gateway:
-    build:
-      context: .
-      dockerfile: ./gateway/Dockerfile
-    ports:
-      - "4000:4000"
-    env_file:
-      - ./gateway/.env.production
-    depends_on:
-      - auth
-      - products
-    networks:
-      - micro_net
-
   auth:
     build:
       context: .
       dockerfile: ./auth/Dockerfile
+    container_name: auth_service
+    ports:
+      - "3001:3001"
     env_file:
       - ./auth/.env.production
-    expose:
-      - "8085"
-    networks:
-      - micro_net
+    environment:
+      NODE_ENV: production
 
   products:
     build:
       context: .
       dockerfile: ./products/Dockerfile
+    container_name: products_service
+    ports:
+      - "3002:3002"
     env_file:
       - ./products/.env.production
-    expose:
-      - "8083"
-    networks:
-      - micro_net
+    environment:
+      NODE_ENV: production
 
-networks:
-  micro_net:
-    driver: bridge
+  gateway:
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
+    container_name: gateway_service
+    ports:
+      - "4000:4000"
+    depends_on:
+      - auth
+      - products
+    env_file:
+      - ./gateway/.env.production
+    environment:
+      NODE_ENV: production

@@ -9,8 +9,7 @@ import { AuthModel } from "./auth.service";
 import { UserDocument } from "./auth.schema";
 import { IUser } from "./auth.interface";
 
-import { authVerification } from "@ecomerce/common";
-import AppError from "common/src/utils/error/appError";
+import { AppError, authVerification } from "@ecomerce/common";
 
 export class AuthController {
   // REGISTRAR USUARIO

@@ -4,8 +4,10 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "composite": true,
     "skipLibCheck": true,
     "baseUrl": ".",              
     "paths": {

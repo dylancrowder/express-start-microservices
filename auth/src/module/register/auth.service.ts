@@ -2,7 +2,7 @@
 import bcrypt from "bcryptjs";
 import User, { UserDocument } from "./auth.schema";
 import { RegisterDTO } from "./auth.interface";
-import AppError from "../../../../common/dist/utils/error/appError";
+import { AppError } from "@ecomerce/common";
 
 export class AuthModel {
   static async register({

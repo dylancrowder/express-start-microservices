@@ -2,7 +2,7 @@
 import { Product } from "./productDTO";
 import { ProductDocument } from "./product.schema";
 import ProductModel from "./product.schema";
-import AppError from "common/src/utils/error/appError";
+import { AppError } from "@ecomerce/common";
 
 export class ProductService {
   static async createProduct(body: Product): Promise<ProductDocument> {

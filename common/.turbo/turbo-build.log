@@ -1,6 +1,6 @@
 
 > @ecomerce/common@1.0.0 build
-> tsc && npm run copy-docs
+> tsc -b && npm run copy-docs
 
 
 > @ecomerce/common@1.0.0 copy-docs

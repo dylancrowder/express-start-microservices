@@ -1,31 +1,20 @@
-# syntax=docker/dockerfile:1.4
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json turbo.json tsconfig.base.json ./
-COPY products/package*.json products/
-COPY common/package*.json common/
+COPY package*.json ./
+COPY common/package*.json ./common/
+COPY products/package*.json ./products/
 
-RUN npm install && npm cache clean --force
+COPY tsconfig.base.json ./
+
+RUN npm install
 
 COPY common ./common
 COPY products ./products
 
-RUN npx turbo run build --filter=products...
+RUN cd products && npm run build
 
-FROM node:20-alpine AS runner
+EXPOSE 3002
 
-WORKDIR /app
-
-COPY products/package*.json ./
-
-# Copiamos la carpeta common/dist con el código compilado común
-COPY --from=builder /app/common/dist ./common/dist
-# Copiamos el código compilado de products
-COPY --from=builder /app/products/dist ./dist
-
-ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=512"
-
-CMD ["node", "dist/server.js"]
+CMD ["node", "products/dist/server.js"]

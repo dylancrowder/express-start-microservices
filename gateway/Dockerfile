@@ -1,31 +1,23 @@
-# syntax=docker/dockerfile:1.4
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json turbo.json tsconfig.base.json ./
-COPY gateway/package*.json gateway/
-COPY common/package*.json common/
+# Copiamos package.json
+COPY package*.json ./
+COPY common/package*.json ./common/
+COPY gateway/package*.json ./gateway/
 
-RUN npm install && npm cache clean --force
+# También copiamos tsconfig base
+COPY tsconfig.base.json ./ 
 
+RUN npm install
+
+# Copiamos el resto del código
 COPY common ./common
 COPY gateway ./gateway
 
-RUN npx turbo run build --filter=gateway...
+# Build usando el tsconfig base
+RUN cd gateway && npm run build
 
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-
-COPY gateway/package*.json ./
-
-# Copiamos la carpeta common/dist con el código compilado común
-COPY --from=builder /app/common/dist ./common/dist
-# Copiamos el código compilado de gateway
-COPY --from=builder /app/gateway/dist ./dist
-
-ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=512"
-
-CMD ["node", "dist/server.js"]
+EXPOSE 4000
+CMD ["node", "gateway/dist/server.js"]

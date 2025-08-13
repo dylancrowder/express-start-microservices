@@ -4,5 +4,4 @@ export * from "./utils/joi";
 export * from "./utils/error/appError";
 export * from "./middlewares/winton";
 export * from "./utils/winsdom";
-export { hola } from "./middlewares/test";
 //# sourceMappingURL=index.d.ts.map
