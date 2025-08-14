@@ -2,3 +2,60 @@
 > products@1.0.0 build
 > tsc
 
+
+
+#
+# Fatal process out of memory: Zone
+#
+----- Native stack trace -----
+
+
+
+#
+# Fatal process out of memory: Zone
+#
+----- Native stack trace -----
+
+
+
+#
+# Fatal process out of memory: Zone
+#
+----- Native stack trace -----
+
+
+
+#
+# Fatal process out of memory: Zone
+#
+----- Native stack trace -----
+
+ 1: 00007FF6AB06A39D 
+ 1: 00007FF6AB06A39D 
+ 1: 00007FF6AB06A39D 
+ 2: 00007FF6AAF4BE8F 
+ 3: 00007FF6AC1453E6 
+ 4: 00007FF6ABB3FA21 
+ 5: 00007FF6AB60EBEB 
+ 6: 00007FF6AB37AE70 
+ 7: 00007FF6AC299855 
+ 8: 00007FF6AC2BE7E4 
+ 9: 00007FF6AC25B211 
+10: 00007FF6AC25B4BB 
+11: 00007FF6AC263605 
+12: 00007FF6AC25CDAA 
+13: 00007FF6ABABA664 
+14: 00007FF6ABA73F72 
+15: 00007FF6ABD44835 
+16: 00007FF6AAF4E739 
+17: 00007FF6AB0C9943 
+18: 00007FF6AC85138E 
+19: 00007FFC64B77374 
+20: 00007FFC66B9CC91 
+npm error Lifecycle script `build` failed with error:
+npm error code 2147483651
+npm error path C:\Users\devdy\OneDrive\Desktop\express-start-microservices\products
+npm error workspace products@1.0.0
+npm error location C:\Users\devdy\OneDrive\Desktop\express-start-microservices\products
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c tsc

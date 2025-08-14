@@ -1,0 +1,11 @@
+node_modules
+.env.production
+.env.development
+dist
+dist/
+.npmrc 
+.vercel
+.env
+.vscode
+.vscode/
+.dockerignore

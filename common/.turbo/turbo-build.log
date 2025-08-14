@@ -1,7 +1,9 @@
+npm warn config ignoring workspace config at C:\Users\devdy\OneDrive\Desktop\express-start-microservices\common/.npmrc
 
 > @ecomerce/common@1.0.0 build
 > tsc -b && npm run copy-docs
 
+npm warn config ignoring workspace config at C:\Users\devdy\OneDrive\Desktop\express-start-microservices\common/.npmrc
 
 > @ecomerce/common@1.0.0 copy-docs
 > copyfiles -u 1 documentation/**/* dist/documentation

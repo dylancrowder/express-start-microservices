@@ -1,15 +1,20 @@
 import express from "express";
-import compression from "compression";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
-
 import corsHelmet from "./middleware/corsHelmet";
-import rateLimiter from "./middleware/rateLimiter";
+
 import { authenticateJWT } from "./middleware/authenticateJWT";
 import { createProxy } from "./middleware/proxy";
-import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
+import {
+  errorHandler,
+  errorRoute,
+  metricsEndpoint,
+  metricsRequestCounter,
+  winstonMiddleware,
+} from "@ecomerce/common";
 import path from "path";
 import swaggerJsdoc from "swagger-jsdoc";
+const commonPath = path.dirname(require.resolve("@ecomerce/common"));
 const app = express();
 
 // --------------------
@@ -17,15 +22,13 @@ const app = express();
 // --------------------
 app.use(express.json());
 app.use(corsHelmet);
-app.use(rateLimiter);
-app.use(compression());
 app.use(cookieParser());
 app.use(winstonMiddleware);
 
 // --------------------
 // Documentación Swagger
 // --------------------
-const commonPath = path.dirname(require.resolve("@ecomerce/common"));
+
 const swaggerSpec = swaggerJsdoc({
   definition: {
     openapi: "3.0.0",
@@ -41,7 +44,7 @@ const swaggerSpec = swaggerJsdoc({
 });
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.use(metricsRequestCounter);
 // --------------------
 // Config servicios
 // --------------------
@@ -56,9 +59,15 @@ const PRODUCTS_SERVICE_URL =
 app.use("/auth", createProxy(AUTH_SERVICE_URL, "/auth"));
 app.use(
   "/products",
-  /*   authenticateJWT, */
+  /* authenticateJWT, */
   createProxy(PRODUCTS_SERVICE_URL, "/products", true)
 );
+
+// --------------------
+// Monitor
+// --------------------
+app.use(metricsRequestCounter);
+app.get("/metrics", metricsEndpoint);
 
 // --------------------
 // Manejo de errores
