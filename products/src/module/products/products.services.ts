@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Product } from "./productDTO";
-import { ProductDocument } from "./product.schema";
-import ProductModel from "./product.schema";
+
 import { AppError } from "@ecomerce/common";
+import ProductModel, { ProductDocument } from "./schemas/product.schema";
 
 export class ProductService {
+  // CREAR PRODUCTO
   static async createProduct(body: Product): Promise<ProductDocument> {
     try {
       const newProduct = await ProductModel.create(body);
@@ -19,7 +20,32 @@ export class ProductService {
       );
     }
   }
+  // OBTENER UN PRODUCTO
+  static async getOneProduct(id: string): Promise<ProductDocument> {
+    try {
+      const product = await ProductModel.findById(id);
+      if (product === null) {
+        throw new AppError(
+          "NotFound",
+          404,
+          null,
+          "Producto no encontrado.",
+          true
+        );
+      }
+      return product;
+    } catch (error: any) {
+      throw new AppError(
+        "InternalServerError",
+        500,
+        error,
+        "Error interno del servidor al obtener los productos.",
+        true
+      );
+    }
+  }
 
+  // OBTENER TODOS LOS PRODUCTOS
   static async getAllProducts(): Promise<ProductDocument[]> {
     try {
       const products = await ProductModel.find();
@@ -35,21 +61,7 @@ export class ProductService {
     }
   }
 
-  static async deleteOneProduct(id: string): Promise<{ deleted: boolean }> {
-    try {
-      const result = await ProductModel.deleteOne({ _id: id });
-
-      return { deleted: result.deletedCount > 0 };
-    } catch (error) {
-      throw new AppError(
-        "internalServerError",
-        500,
-        error,
-        "error interno del servidor, no se pudo borrar tu producto"
-      );
-    }
-  }
-
+  // EDITAR UN PRODUCTO
   static async editOneProduct(
     id: string,
     updateData: Partial<Product>
@@ -64,8 +76,6 @@ export class ProductService {
         }
       );
 
-      console.log(updatedProduct);
-
       return updatedProduct;
     } catch (error) {
       throw new AppError(
@@ -73,6 +83,22 @@ export class ProductService {
         500,
         error,
         "Error interno del servidor, no se pudo editar tu producto"
+      );
+    }
+  }
+
+  // ELIMINAR UN PRODUCTO
+  static async deleteOneProduct(id: string): Promise<{ deleted: boolean }> {
+    try {
+      const result = await ProductModel.deleteOne({ _id: id });
+
+      return { deleted: result.deletedCount > 0 };
+    } catch (error) {
+      throw new AppError(
+        "internalServerError",
+        500,
+        error,
+        "error interno del servidor, no se pudo borrar tu producto"
       );
     }
   }

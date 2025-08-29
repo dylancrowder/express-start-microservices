@@ -2,6 +2,8 @@
 import express from "express";
 import cors from "cors";
 import productsRouter from "./module/products/product.routes";
+import orders from "./module/orders/ordets.routes";
+import orderItems from "./module/order_items/order.items.routes";
 // rutes
 import {
   errorHandler,
@@ -28,6 +30,8 @@ app.use(metricsRequestCounter);
 
 // rutas
 app.use("/", productsRouter);
+app.use("/orders", orders);
+app.use("/order-items", orderItems);
 
 // Monitorizacion
 app.get("/metrics", metricsEndpoint);

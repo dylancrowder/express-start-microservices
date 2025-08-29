@@ -1,23 +1,32 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copiamos package.json
+# Copiar tsconfig.base.json primero para evitar errores
+COPY tsconfig.base.json ./
+
 COPY package*.json ./
 COPY common/package*.json ./common/
 COPY gateway/package*.json ./gateway/
 
-# También copiamos tsconfig base
-COPY tsconfig.base.json ./ 
-
 RUN npm install
 
-# Copiamos el resto del código
 COPY common ./common
 COPY gateway ./gateway
 
-# Build usando el tsconfig base
 RUN cd gateway && npm run build
 
-EXPOSE 4000
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY common/package*.json ./common/
+COPY gateway/package*.json ./gateway/
+
+RUN npm install --omit=dev
+
+COPY --from=builder /app/common/dist ./common/dist
+COPY --from=builder /app/gateway/dist ./gateway/dist
+
 CMD ["node", "gateway/dist/server.js"]

@@ -3,10 +3,3 @@ npm warn config ignoring workspace config at C:\Users\devdy\OneDrive\Desktop\exp
 > gateway@1.0.0 build
 > tsc
 
-
-
-#
-# Fatal process out of memory: Zone
-#
------ Native stack trace -----
-

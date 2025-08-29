@@ -1,10 +1,10 @@
 import { Schema, model, HydratedDocument } from "mongoose";
-import { Product } from "./productDTO";
+import { Product } from "../productDTO";
 
-// ✅ Definición correcta
+// Documento completo
 export type ProductDocument = HydratedDocument<Product>;
 
-const productSchema = new Schema<Product>(
+const ProductSchema = new Schema<Product>(
   {
     name: {
       type: String,
@@ -31,10 +31,21 @@ const productSchema = new Schema<Product>(
       required: [true, "La descripción es requerida"],
       maxlength: [500, "Máximo 500 caracteres"],
     },
+    category_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+    },
+    img: {
+      type: String,
+      default: null,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+  }
 );
 
-const ProductModel = model<Product>("Product", productSchema);
+const ProductModel = model<Product>("Product", ProductSchema);
 
 export default ProductModel;

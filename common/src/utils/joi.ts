@@ -5,7 +5,8 @@ export const createProductSchema = Joi.object({
   price: Joi.number().positive().required(),
   stock: Joi.number().integer().min(0).required(),
   description: Joi.string().allow("").optional(),
-  image: Joi.string().allow(null, "").optional(), // ahora acepta string vacío o null
+  category_id: Joi.string(),
+  img: Joi.string().allow(null, "").optional(),
 });
 
 // Registro de usuario
@@ -17,7 +18,7 @@ export const authVerification = Joi.object({
 // Validar un ObjectId de MongoDB
 export const idSchema = Joi.object({
   id: Joi.string()
-    .pattern(/^[0-9a-fA-F]{24}$/) // patrón de ObjectId (24 caracteres hexadecimales)
+    .pattern(/^[0-9a-fA-F]{24}$/)
     .required()
     .messages({
       "string.base": "El ID debe ser un texto",

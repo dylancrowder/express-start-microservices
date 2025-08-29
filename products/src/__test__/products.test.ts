@@ -3,7 +3,7 @@ import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import app from "../app";
 import dotenv from "dotenv";
-import { ProductDocument } from "../module/products/product.schema";
+import { ProductDocument } from "../module/products/schemas/product.schema";
 
 dotenv.config({ path: ".env.development" });
 

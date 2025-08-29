@@ -10,6 +10,7 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - gateway
+    restart: always
 
   auth:
     build:
@@ -22,6 +23,7 @@ services:
       - ./auth/.env.production
     environment:
       NODE_ENV: production
+    restart: always
 
   products:
     build:
@@ -34,6 +36,7 @@ services:
       - ./products/.env.production
     environment:
       NODE_ENV: production
+    restart: always
 
   gateway:
     build:
@@ -49,3 +52,4 @@ services:
       - ./gateway/.env.production
     environment:
       NODE_ENV: production
+    restart: always
