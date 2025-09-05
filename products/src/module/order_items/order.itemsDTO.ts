@@ -2,10 +2,12 @@ import { Types } from "mongoose";
 
 // DTO para crear un item de orden
 export interface CreateOrderItemDTO {
-  product_id?: Types.ObjectId;
-  custom_product_id?: Types.ObjectId;
+  _id?: Types.ObjectId;
+  productId?: Types.ObjectId | null;
+  custom_product_id?: Types.ObjectId | null;
   quantity: number;
   total: number;
+  price: number;
 }
 
 // Documento completo

@@ -12,7 +12,7 @@ import {
   metricsRequestCounter,
   winstonMiddleware,
 } from "@ecomerce/common";
-
+import prueba from "./module/prueba/prueba.route";
 const app = express();
 
 //middleware configuration
@@ -32,7 +32,7 @@ app.use(metricsRequestCounter);
 app.use("/", productsRouter);
 app.use("/orders", orders);
 app.use("/order-items", orderItems);
-
+app.use("/prueba", prueba);
 // Monitorizacion
 app.get("/metrics", metricsEndpoint);
 // Manejo de errores

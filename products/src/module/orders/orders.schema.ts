@@ -1,20 +1,19 @@
-// order.schema.ts
 import { Schema, model, HydratedDocument } from "mongoose";
 import { CreateOrderDTO } from "./orderDTO";
-import OrderItemModel from "../order_items/order.items.schema";
 
 export type OrderDocument = HydratedDocument<CreateOrderDTO>;
 
 const OrderSchema = new Schema<CreateOrderDTO>(
   {
-    user_id: { type: Number, required: true },
-    admin_id: { type: Number, default: null },
+    user_id: { type: Schema.Types.ObjectId, required: true },
+    admin_id: { type: Schema.Types.ObjectId, default: null },
     status: {
       type: String,
       enum: ["pending", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
-    items: [OrderItemModel.schema], // ✅ Esto está perfecto
+    // 🔥 corregido: referencia a OrderItem en singular
+    items: [{ type: Schema.Types.ObjectId, ref: "OrderItem", required: true }],
     total: { type: Number, required: true, min: 0 },
     amount_paid: { type: Number, default: 0, min: 0 },
     payment_type: {

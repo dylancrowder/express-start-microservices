@@ -5,12 +5,8 @@ import { OrderController } from "./orders.controller";
 const router = express.Router();
 
 // Crear un nuevo pedido
-router.post(
-  "/create",
-
-  OrderController.createOrder
-);
-
+router.post("/create", OrderController.createOrder);
+/* 
 // Obtener todos los pedidos
 router.get("/find", OrderController.getAllOrders);
 
@@ -18,6 +14,6 @@ router.get("/find", OrderController.getAllOrders);
 router.patch("/edit/:id", OrderController.editOneOrder);
 
 // Eliminar un pedido por ID
-router.delete("/delete/:id", OrderController.deleteOneOrder);
+router.delete("/delete/:id", OrderController.deleteOneOrder); */
 
 export default router;

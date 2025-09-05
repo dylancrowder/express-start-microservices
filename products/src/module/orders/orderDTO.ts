@@ -1,16 +1,20 @@
 // orderDTO.ts
 
-import { CreateOrderItemDTO } from "../order_items/order.itemsDTO";
+import { Types } from "mongoose";
 
 export interface CreateOrderDTO {
-  user_id: number;
-  admin_id?: number; // opcional
+  user_id: Types.ObjectId;
+  admin_id?: Types.ObjectId; // opcional
   status?: "pending" | "shipped" | "delivered" | "cancelled";
   total: number;
   amount_paid?: number;
-  items?: Array<CreateOrderItemDTO>;
+  items?: Array<OrderItemsDTO>;
   payment_type?: "card" | "cash" | "pix" | "crypto";
   payment_status?: "debt" | "paid";
+}
+export interface OrderItemsDTO {
+  productId: string;
+  quantity: number;
 }
 
 export type UpdateOrderDTO = Partial<CreateOrderDTO>;

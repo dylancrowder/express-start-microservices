@@ -3,6 +3,7 @@ import { Product } from "./productDTO";
 
 import { AppError } from "@ecomerce/common";
 import ProductModel, { ProductDocument } from "./schemas/product.schema";
+import { Types } from "mongoose";
 
 export class ProductService {
   // CREAR PRODUCTO
@@ -21,7 +22,7 @@ export class ProductService {
     }
   }
   // OBTENER UN PRODUCTO
-  static async getOneProduct(id: string): Promise<ProductDocument> {
+  static async getProductById(id: string): Promise<ProductDocument> {
     try {
       const product = await ProductModel.findById(id);
       if (product === null) {
@@ -58,6 +59,23 @@ export class ProductService {
         "Error interno del servidor al obtener los productos.",
         true
       );
+    }
+  }
+
+  static async getManyProductsByIds(
+    idsArray: string[]
+  ): Promise<ProductDocument[]> {
+    try {
+      // Convertir strings a ObjectId
+      const objectIds = idsArray.map((id) => new Types.ObjectId(id));
+
+      const products = await ProductModel.find({
+        _id: { $in: objectIds },
+      });
+      return products;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error;
     }
   }
 
