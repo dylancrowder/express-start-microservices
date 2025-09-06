@@ -1,15 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/modules/orders/orders.service.ts
 import { AppError } from "@ecomerce/common";
 import OrderModel, { OrderDocument } from "./orders.schema";
-import { ProductService } from "../products/products.services";
-import { CreateOrderDTO, OrderItemsDTO } from "./orderDTO";
+import OrderItemModel from "../order_items/order.items.schema";
+import { CreateOrderDTO } from "./orderDTO";
 
 export class OrderService {
   // CREAR ORDEN
   static async createOrder(orderBody: CreateOrderDTO): Promise<OrderDocument> {
     try {
-      // extraer los IDs de los productos
-      if (!orderBody.items || !Array.isArray(orderBody.items)) {
+      // Validar items
+      if (
+        !orderBody.items ||
+        !Array.isArray(orderBody.items) ||
+        orderBody.items.length === 0
+      ) {
         throw new AppError(
           "BadRequest",
           400,
@@ -18,34 +23,42 @@ export class OrderService {
           true
         );
       }
-      console.log("la bodyyyyyyyyyyyyyyyy", orderBody);
 
-      const ids = orderBody.items.map((id: OrderItemsDTO) => id.toString());
-      console.log("estos son los ids ", ids);
-      const products = await ProductService.getManyProductsByIds(ids);
-      console.log("prodddddddddddddddddddddd", products);
+      let total = 0;
 
-      // calcular total
-      const total = products.reduce((sum, product) => {
-        const item = orderBody.items!.find(
-          (i) => i.productId === product._id.toString()
-        );
-        return sum + (item ? item.quantity * product.price : 0);
-      }, 0);
+      // Obtener los OrderItems existentes y calcular total
+      const orderItemIds = await Promise.all(
+        orderBody.items.map(async (itemId: any) => {
+          const orderItem = await OrderItemModel.findById(itemId);
 
-      const ord = {
+          if (!orderItem) {
+            throw new AppError(
+              "NotFound",
+              404,
+              `OrderItem con id ${itemId} no encontrado`,
+              "No se encontró el item en la base de datos",
+              true
+            );
+          }
+
+          total += orderItem.total;
+          return orderItem._id; // solo guardamos el ID
+        })
+      );
+
+      // Crear la orden
+      const newOrder = await OrderModel.create({
         ...orderBody,
+        items: orderItemIds,
         total,
-      };
+      });
 
-      const newOrder = await OrderModel.create(ord);
-      return await newOrder.save();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return newOrder;
     } catch (error: any) {
       throw new AppError(
         "InternalServerError",
         500,
-        error,
+        error.message || error,
         "Error interno del servidor al crear la orden.",
         true
       );

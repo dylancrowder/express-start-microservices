@@ -13,8 +13,7 @@ export interface CreateOrderDTO {
   payment_status?: "debt" | "paid";
 }
 export interface OrderItemsDTO {
-  productId: string;
-  quantity: number;
+  id: string;
 }
 
 export type UpdateOrderDTO = Partial<CreateOrderDTO>;
