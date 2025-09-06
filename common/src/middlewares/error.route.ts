@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
+import { logger } from "../utils/winsdom";
 
 export const errorRoute = (req: Request, res: Response, next: NextFunction) => {
-  console.log("Error: Ruta no encontrada");
+  logger.error("Error: Ruta no encontrada");
 
   res.status(404).json({
     error: "Página no encontrada",

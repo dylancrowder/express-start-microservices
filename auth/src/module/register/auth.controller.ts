@@ -6,10 +6,10 @@ import bcrypt from "bcryptjs";
 
 import { AuthModel } from "./auth.service";
 
-import AppError from "../../../../common/dist/utils/error/appError";
 import { UserDocument } from "./auth.schema";
 import { IUser } from "./auth.interface";
-import { authVerification } from "@ecomerce/common";
+
+import { AppError, authVerification } from "@ecomerce/common";
 
 export class AuthController {
   // REGISTRAR USUARIO
@@ -86,19 +86,37 @@ export class AuthController {
       }
 
       const token = jwt.sign(
-        { userId: user._id, role: user.role },
+        { userId: user._id, role: user.role, email: user.email },
         process.env.JWT_SECRET as string,
         { expiresIn: "1h" }
       );
 
+      const refreshToken = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_REFRESH_SECRET as string,
+        { expiresIn: "7d" }
+      );
       res.cookie("token", token, {
         httpOnly: true,
-        secure: false, // Cambiar a true en producción con HTTPS
+        secure: false,
         sameSite: "lax",
-        maxAge: 3600000, // 1 hora
+        maxAge: 3600000,
       });
 
-      res.status(200).json({ message: "Autenticación exitosa.", token });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 7 * 24 * 3600000, // 7 días
+      });
+
+      res.status(200).json({
+        message: "Autenticación exitosa.",
+        accessToken: token,
+        refreshToken: refreshToken,
+        email: user.email,
+        role: user.role,
+      });
     } catch (error) {
       next(error);
     }
@@ -114,6 +132,32 @@ export class AuthController {
       res.clearCookie("token");
       res.status(200).json({ message: "Sesión cerrada exitosamente." });
     } catch (error: any) {
+      next(error);
+    }
+  };
+
+  // REFRESH TOKEN
+  static refresh = (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken)
+        return res.status(401).json({ error: "No refresh token" });
+
+      const JWT_SECRET = process.env.JWT_SECRET;
+      const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+      if (!JWT_SECRET || !JWT_REFRESH_SECRET)
+        throw new Error("JWT secrets deben estar definidos");
+
+      // Verificar refresh token
+      const payload: any = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+
+      // Crear nuevo access token
+      const newAccessToken = jwt.sign({ userId: payload.userId }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      res.status(200).json({ accessToken: newAccessToken });
+    } catch (error) {
       next(error);
     }
   };

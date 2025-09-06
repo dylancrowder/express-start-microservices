@@ -1,6 +1,7 @@
 import { ErrorRequestHandler } from "express";
-import AppError from "../utils/error/appError";
+
 import { logger } from "../utils/winsdom";
+import { AppError } from "../utils/error/appError";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof AppError) {

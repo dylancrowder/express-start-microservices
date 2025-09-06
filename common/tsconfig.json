@@ -3,10 +3,10 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "composite": true,           // para build incremental y referencias
-    "declaration": true,         // para generar *.d.ts
-    "declarationMap": true       // para mapear tipos en debug
+      "declaration": true,        // genera .d.ts
+    "declarationMap": true,     // genera .d.ts.map (opcional)
+    "composite": true           // útil si usas project references
   },
-  "include": ["src"],
+  "include": ["src" , "documentation"],
   "exclude": ["node_modules"]
 }

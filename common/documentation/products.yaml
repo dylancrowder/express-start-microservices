@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  title: API Products
+  version: 1.0.0
+  description: Documentación del microservicio de productos
+
+servers:
+  - url: http://localhost:4000/products
+    description: API Products local
+
+paths:
+  /create:
+    post:
+      summary: Crear un nuevo producto
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        201:
+          description: Producto creado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /find:
+    get:
+      summary: Obtener todos los productos
+      tags:
+        - Products
+      responses:
+        200:
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /deleteOne/{id}:
+    delete:
+      summary: Eliminar un producto por ID
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Producto eliminado con éxito
+
+  /editOne/{id}:
+    patch:
+      summary: Editar un producto por ID
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        200:
+          description: Producto actualizado con éxito
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        description:
+          type: string
+    ProductInput:
+      type: object
+      required:
+        - name
+        - price
+        - stock
+        - description
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        description:
+          type: string

@@ -1,13 +1,18 @@
 // PRODUCTS
 import express from "express";
-import swaggerUi from "swagger-ui-express";
-import { swaggerDocs } from "./documentation/swagger.config";
 import cors from "cors";
-
-// rutes
 import productsRouter from "./module/products/product.routes";
-import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
-
+import orders from "./module/orders/ordets.routes";
+import orderItems from "./module/order_items/order.items.routes";
+// rutes
+import {
+  errorHandler,
+  errorRoute,
+  metricsEndpoint,
+  metricsRequestCounter,
+  winstonMiddleware,
+} from "@ecomerce/common";
+import prueba from "./module/prueba/prueba.route";
 const app = express();
 
 //middleware configuration
@@ -19,13 +24,17 @@ app.use(
   })
 );
 app.use(winstonMiddleware);
-// Rutas principales del microservicio de productos
-app.use("/", productsRouter);
-app.use("/documentacion", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-app.get("/swagger.json", (_req, res) => {
-  res.json(swaggerDocs);
-});
 
+// metricas
+app.use(metricsRequestCounter);
+
+// rutas
+app.use("/", productsRouter);
+app.use("/orders", orders);
+app.use("/order-items", orderItems);
+app.use("/prueba", prueba);
+// Monitorizacion
+app.get("/metrics", metricsEndpoint);
 // Manejo de errores
 app.use(errorRoute);
 app.use(errorHandler);

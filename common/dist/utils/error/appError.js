@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AppError = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 class AppError extends Error {
     httpCode;
@@ -14,4 +15,4 @@ class AppError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
-exports.default = AppError;
+exports.AppError = AppError;

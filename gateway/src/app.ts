@@ -1,77 +1,78 @@
-// GATEWAY
 import express from "express";
-import corsHelmet from "./middleware/corsHelmet";
-import rateLimiter from "./middleware/rateLimiter";
-
-import proxy from "express-http-proxy";
-import compression from "compression";
-import docsRoutes from "./documentation/documentation.route";
 import cookieParser from "cookie-parser";
-import { authenticateJWT } from "./middleware/authenticateJWT";
-import { errorHandler, errorRoute, winstonMiddleware } from "@ecomerce/common";
+import swaggerUi from "swagger-ui-express";
+import corsHelmet from "./middleware/corsHelmet";
 
+import { authenticateJWT } from "./middleware/authenticateJWT";
+import { createProxy } from "./middleware/proxy";
+import {
+  errorHandler,
+  errorRoute,
+  metricsEndpoint,
+  metricsRequestCounter,
+  winstonMiddleware,
+} from "@ecomerce/common";
+import path from "path";
+import swaggerJsdoc from "swagger-jsdoc";
+const commonPath = path.dirname(require.resolve("@ecomerce/common"));
 const app = express();
-// Middleware
+
+// --------------------
+// Middlewares globales
+// --------------------
 app.use(express.json());
 app.use(corsHelmet);
-app.use(rateLimiter);
-app.use(compression());
 app.use(cookieParser());
 app.use(winstonMiddleware);
 
-app.use(docsRoutes);
+// --------------------
+// Documentación Swagger
+// --------------------
 
-const AUTH_SERVICE_URL = "http://localhost:8085"; /* "http://auth:8085"; */
-const PRODUCTS_SERVICE_URL =
-  "http://localhost:8083"; /* "http://products:8083"; */
-
-app.get("/", (req, res) => {
-  try {
-    res.status(200).json({
-      message: "Bienvenido a la API de microservicios ",
-      services: {
-        auth: AUTH_SERVICE_URL,
-        products: PRODUCTS_SERVICE_URL,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error al procesar la solicitud",
-    });
-  }
+const swaggerSpec = swaggerJsdoc({
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Ecommerce API Gateway",
+      version: "3.0.0",
+    },
+  },
+  apis: [
+    path.join(commonPath, "documentation/auth.yaml"),
+    path.join(commonPath, "documentation/products.yaml"),
+  ],
 });
 
-// Proxy AUTH
-app.use(
-  "/auth",
-  proxy(AUTH_SERVICE_URL, {
-    proxyReqPathResolver: (req) => req.originalUrl.replace(/^\/auth/, ""),
-    proxyReqBodyDecorator: (_, req) => req.body,
-  })
-);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(metricsRequestCounter);
+// --------------------
+// Config servicios
+// --------------------
+const AUTH_SERVICE_URL =
+  process.env.AUTH_SERVICE_URL || "http://localhost:8085";
+const PRODUCTS_SERVICE_URL =
+  process.env.PRODUCTS_SERVICE_URL || "http://localhost:8083";
 
-// Proxy PRODUCTS
+// --------------------
+// Rutas y proxies
+// --------------------
+app.use("/auth", createProxy(AUTH_SERVICE_URL, "/auth"));
 app.use(
   "/products",
-  /*  authenticateJWT, */
-  proxy(PRODUCTS_SERVICE_URL, {
-    proxyReqPathResolver: (req) => req.originalUrl.replace(/^\/products/, ""),
-    proxyReqBodyDecorator: (body, req) => body,
-    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-      proxyReqOpts.headers = proxyReqOpts.headers || {}; // ✅ fix acá
-
-      proxyReqOpts.headers["Content-Type"] = "application/json";
-
-      if ((srcReq as any).user) {
-        proxyReqOpts.headers["x-user-id"] = (srcReq as any).user.userId;
-      }
-
-      return proxyReqOpts;
-    },
-  })
+  /* authenticateJWT, */
+  createProxy(PRODUCTS_SERVICE_URL, "/products", true)
 );
 
-// Middleware global de manejo de errores
+// --------------------
+// Monitor
+// --------------------
+app.use(metricsRequestCounter);
+app.get("/metrics", metricsEndpoint);
+
+// --------------------
+// Manejo de errores
+// --------------------
 app.use(errorHandler);
 app.use(errorRoute);
+
 export default app;

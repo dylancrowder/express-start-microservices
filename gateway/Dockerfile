@@ -1,34 +1,32 @@
-# syntax=docker/dockerfile:1.4
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copiamos archivos para cachear deps y configuración turborepo y tsconfig base
-COPY package*.json ./
-COPY turbo.json ./
+# Copiar tsconfig.base.json primero para evitar errores
 COPY tsconfig.base.json ./
 
-# Copiamos carpetas comunes y del servicio gateway
+COPY package*.json ./
+COPY common/package*.json ./common/
+COPY gateway/package*.json ./gateway/
+
+RUN npm install
+
 COPY common ./common
 COPY gateway ./gateway
 
-RUN npm install && npm cache clean --force
+RUN cd gateway && npm run build
 
-RUN npx turbo run build --filter=gateway...
-
-# ----------------------------------------
-# Etapa runner
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
 COPY package*.json ./
-COPY turbo.json ./
-RUN npm ci --production && npm cache clean --force
+COPY common/package*.json ./common/
+COPY gateway/package*.json ./gateway/
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/gateway/dist ./dist
+RUN npm install --omit=dev
 
-ENV NODE_OPTIONS="--max-old-space-size=512"
+COPY --from=builder /app/common/dist ./common/dist
+COPY --from=builder /app/gateway/dist ./gateway/dist
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "gateway/dist/server.js"]

@@ -1,13 +1,10 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorHandler = void 0;
-const appError_1 = __importDefault(require("../utils/error/appError"));
 const winsdom_1 = require("../utils/winsdom");
+const appError_1 = require("../utils/error/appError");
 const errorHandler = (err, req, res, next) => {
-    if (err instanceof appError_1.default) {
+    if (err instanceof appError_1.AppError) {
         if (err.isOperational) {
             winsdom_1.logger.warn({
                 message: "Error operacional manejado:",

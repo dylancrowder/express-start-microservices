@@ -1,40 +1,55 @@
+version: "3.9"
+
 services:
-  gateway:
-    build:
-      context: .
-      dockerfile: ./gateway/Dockerfile
+  nginx:
+    image: nginx:latest
+    container_name: nginx_gateway
     ports:
-      - "4000:4000"
-    env_file:
-      - ./gateway/.env.production
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - auth
-      - products
-    networks:
-      - micro_net
+      - gateway
+    restart: always
 
   auth:
     build:
       context: .
       dockerfile: ./auth/Dockerfile
-    env_file:
-      - ./auth/.env.production
+    container_name: auth_service
     expose:
       - "8085"
-    networks:
-      - micro_net
+    env_file:
+      - ./auth/.env.production
+    environment:
+      NODE_ENV: production
+    restart: always
 
   products:
     build:
       context: .
       dockerfile: ./products/Dockerfile
-    env_file:
-      - ./products/.env.production
+    container_name: products_service
     expose:
       - "8083"
-    networks:
-      - micro_net
+    env_file:
+      - ./products/.env.production
+    environment:
+      NODE_ENV: production
+    restart: always
 
-networks:
-  micro_net:
-    driver: bridge
+  gateway:
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
+    container_name: gateway_service
+    expose:
+      - "4000"
+    depends_on:
+      - auth
+      - products
+    env_file:
+      - ./gateway/.env.production
+    environment:
+      NODE_ENV: production
+    restart: always

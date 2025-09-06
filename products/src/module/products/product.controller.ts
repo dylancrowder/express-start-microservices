@@ -1,8 +1,6 @@
 // src/controllers/product.controller.ts
 import { Request, Response, NextFunction } from "express";
-import AppError from "../../../../common/dist/utils/error/appError";
-import { createProductSchema } from "@ecomerce/common";
-
+import { AppError, createProductSchema, idSchema } from "@ecomerce/common";
 import { ProductService } from "./products.services";
 
 export class ProductController {
@@ -55,12 +53,24 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      // Validación
+      const { error, value } = idSchema.validate({ id: req.params.id });
+
+      if (error) {
+        throw new AppError(
+          "ValidationError",
+          400,
+          error,
+          "Datos inválidos. Por favor, revisa los campos del producto.",
+          true
+        );
+      }
+
+      const { id } = value;
 
       const deletedProduct = await ProductService.deleteOneProduct(id);
 
-      if (!deletedProduct) {
-        // Si no se encontró el producto, lanzar error 404
+      if (!deletedProduct.deleted) {
         throw new AppError(
           "notFound",
           404,
@@ -84,7 +94,20 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const { error, value } = idSchema.validate({ id: req.params.id });
+
+      if (error) {
+        throw new AppError(
+          "ValidationError",
+          400,
+          error,
+          "Datos inválidos. Por favor, revisa los campos del producto.",
+          true
+        );
+      }
+
+      const { id } = value;
+
       const updateData = req.body;
 
       const editedProduct = await ProductService.editOneProduct(id, updateData);

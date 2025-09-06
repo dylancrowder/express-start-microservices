@@ -7,8 +7,6 @@ interface DecodedUser {
   role: string;
 }
 
-import "express-serve-static-core";
-
 interface DecodedUser {
   userId: string;
   role: string;

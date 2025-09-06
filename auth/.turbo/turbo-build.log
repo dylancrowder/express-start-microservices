@@ -1,4 +1,5 @@
+npm warn config ignoring workspace config at C:\Users\devdy\OneDrive\Desktop\express-start-microservices\auth/.npmrc
 
 > auth@1.0.0 build
-> tsc
+> tsc -b
 

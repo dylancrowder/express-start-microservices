@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-class AppError extends Error {
+export class AppError extends Error {
   public readonly httpCode: number;
   public readonly isOperational: boolean;
   public readonly responseMessage: string;
@@ -20,5 +20,3 @@ class AppError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
-
-export default AppError;
