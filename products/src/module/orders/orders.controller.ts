@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
 import { OrderService } from "./orders.services";
 import { OrderItemService } from "../order_items/order.items.services";
+import { AppError, createOrderSchema } from "@ecomerce/common";
 
 export class OrderController {
   // CREAR ORDEN
@@ -11,13 +12,27 @@ export class OrderController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      // 1. Crear los items
-      console.log("Request Body (items):", req.body.items);
+      const { error, value } = createOrderSchema.validate(req.body, {
+        abortEarly: false,
+        stripUnknown: false,
+      });
 
-      const items = await OrderItemService.createManyItems(req.body.items);
+      if (error) {
+        throw new AppError(
+          "ValidationError",
+          400,
+          error,
+          "Datos inválidos. Por favor, revisa los campos de la orden.",
+          true
+        );
+      }
+      // pasar el req.user
 
+      // pasar req.admin
+
+      const items = await OrderItemService.createManyItems(value.items);
       const orderData = {
-        ...req.body,
+        ...value,
         items: items.map((i) => i._id as Types.ObjectId),
       };
 

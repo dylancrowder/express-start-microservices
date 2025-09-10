@@ -14,6 +14,8 @@ import {
 } from "@ecomerce/common";
 import path from "path";
 import swaggerJsdoc from "swagger-jsdoc";
+import { authorizeRoles } from "./middleware/roles";
+
 const commonPath = path.dirname(require.resolve("@ecomerce/common"));
 const app = express();
 
@@ -48,6 +50,7 @@ app.use(metricsRequestCounter);
 // --------------------
 // Config servicios
 // --------------------
+
 const AUTH_SERVICE_URL =
   process.env.AUTH_SERVICE_URL || "http://localhost:8085";
 const PRODUCTS_SERVICE_URL =
@@ -59,7 +62,8 @@ const PRODUCTS_SERVICE_URL =
 app.use("/auth", createProxy(AUTH_SERVICE_URL, "/auth"));
 app.use(
   "/products",
-  /* authenticateJWT, */
+  authenticateJWT,
+  authorizeRoles("admin"),
   createProxy(PRODUCTS_SERVICE_URL, "/products", true)
 );
 

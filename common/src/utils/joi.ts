@@ -27,3 +27,32 @@ export const idSchema = Joi.object({
       "any.required": "El ID es obligatorio",
     }),
 });
+
+export const createOrderSchema = Joi.object({
+  user_id: Joi.string()
+    .length(24) // típicamente ObjectId en MongoDB
+    .hex()
+    .required(),
+
+  admin_id: Joi.string().length(24).hex().required(),
+
+  status: Joi.string()
+    .valid("pending", "delivered", "cancelled", "shipped") // ajusta según tus estados
+    .required(),
+
+  amount_paid: Joi.number().positive().required(),
+
+  items: Joi.array()
+    .items(
+      Joi.object({
+        productId: Joi.string().length(24).hex().required(),
+        quantity: Joi.number().integer().min(1).required(),
+      })
+    )
+    .min(1)
+    .required(),
+
+  payment_type: Joi.string().valid("card", "cash", "pix", "crypto").required(),
+
+  payment_status: Joi.string().valid("paid", "debt").required(),
+});

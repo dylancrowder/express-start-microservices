@@ -85,6 +85,7 @@ export class AuthController {
         );
       }
 
+      // Tokens
       const token = jwt.sign(
         { userId: user._id, role: user.role, email: user.email },
         process.env.JWT_SECRET as string,
@@ -96,19 +97,6 @@ export class AuthController {
         process.env.JWT_REFRESH_SECRET as string,
         { expiresIn: "7d" }
       );
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 3600000,
-      });
-
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 7 * 24 * 3600000, // 7 días
-      });
 
       res.status(200).json({
         message: "Autenticación exitosa.",
