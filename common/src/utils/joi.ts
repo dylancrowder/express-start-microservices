@@ -34,8 +34,6 @@ export const createOrderSchema = Joi.object({
     .hex()
     .required(),
 
-  admin_id: Joi.string().length(24).hex().required(),
-
   status: Joi.string()
     .valid("pending", "delivered", "cancelled", "shipped") // ajusta según tus estados
     .required(),

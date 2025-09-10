@@ -14,7 +14,9 @@ export function createProxy(
       proxyReqOpts.headers["Content-Type"] = "application/json";
 
       if (requireAuth && (srcReq as any).user) {
-        proxyReqOpts.headers["x-user-id"] = (srcReq as any).user.userId;
+        const user = (srcReq as any).user;
+        proxyReqOpts.headers["x-user-id"] = user.userId;
+        proxyReqOpts.headers["x-user-role"] = user.role;
       }
 
       return proxyReqOpts;

@@ -59,7 +59,11 @@ const PRODUCTS_SERVICE_URL =
 // --------------------
 // Rutas y proxies
 // --------------------
+
+//microservicio auth
 app.use("/auth", createProxy(AUTH_SERVICE_URL, "/auth"));
+
+//microservicio productos
 app.use(
   "/products",
   authenticateJWT,
